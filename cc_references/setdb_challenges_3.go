@@ -14,8 +14,8 @@
 	"reward" "•XP  •War Table Reputation (Medium)" 
 }}
 {{ $challenge_4 := sdict 
-	"title" "<Classified> Captain's Log" 
-	"description" "Leave no stone unturned aboard the Glykon." 
+	"title" "<Classified> ||Captain's Log||" 
+	"description" "||Leave no stone unturned aboard the Glykon.||" 
 	"reward" "•Classified" 
 }}
 {{ $challenge_5 := sdict 

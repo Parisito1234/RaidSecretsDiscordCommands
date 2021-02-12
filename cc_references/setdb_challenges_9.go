@@ -9,8 +9,8 @@
 	"reward" "•Double XP" 
 }}
 {{ $challenge_3 := sdict 
-	"title" "<Classified> Dire Portents" 
-	"description" "Complete Exotic quest \"Presage\" on Normal or Master difficulty." 
+	"title" "<Classified> ||Dire Portents||" 
+	"description" "||Complete Exotic quest \"Presage\" on Normal or Master difficulty.||" 
 	"reward" "•Classified" 
 }}
 {{ $challenge_4 := sdict 
