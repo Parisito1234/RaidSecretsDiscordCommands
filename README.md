@@ -22,4 +22,10 @@ File: `setdb_{Associated Command/Group}`
 **If a command in this repository gets updated, it will be done so in a way that requires a full overwrite of the previous command. All above steps will be followed to update.**
 
 
+##To Do
+- [ ] Add config, dependency, and override notes to each cc/group
+- [ ] Create a sticky note command for `#datamining-discussion`
+- [ ] Create system for multi-page command responses
+- [ ] Create `-notes` command for moderation purposes outside of `-warn`
+
 *Blah blah blah i'll fill the rest of this out later*
