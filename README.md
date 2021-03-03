@@ -6,8 +6,8 @@ Folder: Custom Command = `cc_{Command Group Name}`
 
 File: Custom Command = `cc_{Command Trigger}` 
 
-Copy the contents of the file into the text field for the custom command.
-Each file with the above previx is a command.
+* Copy the contents of the file into the text field for the custom command.
+* Each file with the above previx is a command.
 
 
 Folder: `setdb_{Associated Command/Group}`
