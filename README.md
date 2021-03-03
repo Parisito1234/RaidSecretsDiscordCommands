@@ -3,13 +3,17 @@ YAGPDB.xyz custom commands for the RaidSecrets Discord server
 
 ## File Naming
 Folder: Custom Command = `cc_{Command Group Name}` 
+
 File: Custom Command = `cc_{Command Trigger}` 
+
 Copy the contents of the file into the text field for the custom command.
 Each file with the above previx is a command.
 
 
 Folder: `setdb_{Associated Command/Group}`
-File: `setdb_{Associated Command/Group}`
+
+File: `setdb_{Associated Command/Group}` 
+
 *Follow these steps to use setdb commands:*
 1. Create a _mod-only_ command or command group with this command inside it.
 2. Set the command name to something arbitrary - I use `setdb`. This will be deleted when done.
