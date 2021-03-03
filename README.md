@@ -1,9 +1,9 @@
 # RaidSecretsDiscordCommands
 YAGPDB.xyz custom commands for the RaidSecrets Discord server
 
-##File Naming
-Folder: Custom Command = `cc_{Command Group Name}`
-File: Custom Command = `cc_{Command Trigger}`
+## File Naming
+Folder: Custom Command = `cc_{Command Group Name}` 
+File: Custom Command = `cc_{Command Trigger}` 
 Copy the contents of the file into the text field for the custom command.
 Each file with the above previx is a command.
 
@@ -22,7 +22,7 @@ File: `setdb_{Associated Command/Group}`
 **If a command in this repository gets updated, it will be done so in a way that requires a full overwrite of the previous command. All above steps will be followed to update.**
 
 
-##To Do
+## To Do
 - [ ] Add config, dependency, and override notes to each cc/group
 - [ ] Create a sticky note command for `#datamining-discussion`
 - [ ] Create system for multi-page command responses
