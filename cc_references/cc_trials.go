@@ -2,7 +2,7 @@
 {{$embed := cembed 
     "color" 1772743
     "fields" (cslice 
-        (sdict "name" "Trials of Osiris loot table" "value" "[Loot Rotation Spreadsheet](https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vTtZbHHw3ncerNkBsOL5ckJf1Fi_DrVOyl7maIAIIpPj-FSmFWoZZDhcva3xkLz_ExQ70XpWPe4c6BH/pubhtml?gid=0&single=true)" "inline" false) 
+        (sdict "name" "Trials of Osiris loot table" "value" "[Loot Rotation Spreadsheet](https://docs.google.com/spreadsheets/d/1cbIuRPujrM4R-Q-C9GcRhdFfkVFut8k8bNkMB87FujA/edit?usp=sharing)" "inline" false) 
     ) 
     "thumbnail" (sdict "url" $avatar) 
 }}

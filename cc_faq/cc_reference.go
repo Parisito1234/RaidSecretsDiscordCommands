@@ -3,7 +3,7 @@
     "color" 1772743
     "fields" (cslice 
         (sdict "name" "-lore" "value" "Instant search links to Ishtar Collective\nUsage: `-lore [Opt: 'categories|books|items'] (search query)`" "inline" false) 
-        (sdict "name" "-challenges" "value" "Display seasonal challenges by week. Sends a DM to the user. \nUsage: `-challenges <Week number>`" "inline" false) 
+        (sdict "name" "-challenges" "value" "Provides a link to current seasonal challenges. \nUsage: `-challenges`" "inline" false) 
         (sdict "name" "-twab" "value" "Link to TWAB webpage" "inline" true) 
         (sdict "name" "-patchnotes" "value" "Link to Bungie Updates webpage" "inline" true) 
         (sdict "name" "-roadmap" "value" "Current Seasonal Roadmap" "inline" true) 

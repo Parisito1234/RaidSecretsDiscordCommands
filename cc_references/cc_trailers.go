@@ -1,7 +1,7 @@
-{{ $curseasonal:= "[Season of the Chosen](https://youtu.be/_XlFBp_ZmyE)" }}
+{{ $curseasonal:= "[Season of the Splicer](https://youtu.be/crKGHG3stbY)" }}
 {{ $expansion := "[Beyond Light](https://youtu.be/cthLUnEqT5k)" }}
-{{ $avatar := "https://www.bungie.net/common/destiny2_content/icons/f9ad6ac2aecaa89b2b4e075cc6e8b89f.png" }}
- 
+{{ $avatar := (dbGet 0 "currentSeasonIcon").Value }}
+
 {{$embed := cembed 
     "title" "Currently relevant Destiny 2 trailers:"
     "color" 1772743
@@ -12,5 +12,5 @@
     "thumbnail" (sdict "url" $avatar) 
     "author" (sdict "name" "RaidSecrets") 
 }}
- 
+
 {{ sendMessage nil $embed }}

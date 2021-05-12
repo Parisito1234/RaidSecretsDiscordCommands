@@ -1,7 +1,7 @@
-{{ $status:= "Currently on hold until more information comes to light." }}
+{{ $status:= "Currently exploring new seasonal lore and story." }}
 {{ $redditurl:= "[Megathread](https://www.reddit.com/r/raidsecrets/comments/9z1bw4/wish_15_megathreadfor_serious_discussion/)" }}
 {{ $avatar := "https://www.bungie.net/common/destiny2_content/icons/fc5791eb2406bf5e6b361f3d16596693.png" }}
- 
+
 {{$embed := cembed 
     "title" "__Wish 15__ status and links"
     "color" 1772743
@@ -13,5 +13,5 @@
     "thumbnail" (sdict "url" $avatar) 
     "author" (sdict "name" "RaidSecrets") 
 }}
- 
+
 {{ sendMessage nil $embed }}

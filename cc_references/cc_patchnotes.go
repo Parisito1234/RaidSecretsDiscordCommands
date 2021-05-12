@@ -1,8 +1,8 @@
-{{ $avatar := "https://www.bungie.net/common/destiny2_content/icons/DestinyActivityModeDefinition_e35792b49b249ca5dcdb1e7657ca42b6.png" }}
+{{ $avatar := "https://www.bungie.net/common/destiny2_content/icons/8ff7269628a34bf7adc71ee0b518f9a2.png" }}
 {{$embed := cembed 
     "color" 1772743
     "fields" (cslice 
-        (sdict "name" "Trials Loot Table" "value" "[Loot rotation spreadsheet](https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vTtZbHHw3ncerNkBsOL5ckJf1Fi_DrVOyl7maIAIIpPj-FSmFWoZZDhcva3xkLz_ExQ70XpWPe4c6BH/pubhtml?gid=0&single=true)" "inline" false) 
+        (sdict "name" "Season of the Splicer" "value" "[Patchnotes](https://www.bungie.net/en/Explore/Detail/News/50339)" "inline" false) 
     ) 
     "thumbnail" (sdict "url" $avatar) 
 }}

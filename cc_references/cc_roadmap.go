@@ -1,8 +1,8 @@
-{{ $imageurl:= "https://www.bungie.net/pubassets/pkgs/149/149495/ae_season13_cal_EN_1.jpg" }}
-{{ $avatar := "https://www.bungie.net/common/destiny2_content/icons/f9ad6ac2aecaa89b2b4e075cc6e8b89f.png" }}
+{{ $imageurl:= (dbGet 0 "roadmapURL").Value }}
+{{ $avatar := (dbGet 0 "currentSeasonIcon").Value }}
 {{$embed := cembed 
     "color" 1772743
     "image" (sdict "url" $imageurl) 
-    "footer" (sdict "icon_url" $avatar "text" "Season of the Chosen") 
+    "footer" (sdict "icon_url" $avatar "text" "Season of the Splicer") 
 }}
 {{ sendMessage nil $embed }}
