@@ -1,3 +1,6 @@
+{{ /* Trigger: Command: roadmap */ }}
+{{ /* Read cc_admin/readme.md and use setdb command to set this up */ }}
+
 {{ $imageurl:= (dbGet 0 "roadmapURL").Value }}
 {{ $avatar := (dbGet 0 "currentSeasonIcon").Value }}
 {{$embed := cembed 

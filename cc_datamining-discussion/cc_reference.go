@@ -1,3 +1,5 @@
+{{ /* Trigger: Command: reference */ }}
+
 {{$embed := cembed 
     "title" "Datamining Discussion Commands:"
     "description" "This channel has specific overrides for `-reference` and any commands that have the same trigger as the rest of the server."
@@ -7,5 +9,5 @@
         (sdict "name" "-api" "value" "API documentation and 3rd party tools" "inline" false) 
     ) 
 }}
- 
+
 {{ sendMessage nil $embed }}

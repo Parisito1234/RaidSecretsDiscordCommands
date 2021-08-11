@@ -1,3 +1,5 @@
+{{ /* Trigger: Command: trailers */ }}
+
 {{ $curseasonal:= "[Season of the Splicer](https://youtu.be/crKGHG3stbY)" }}
 {{ $expansion := "[Beyond Light](https://youtu.be/cthLUnEqT5k)" }}
 {{ $avatar := (dbGet 0 "currentSeasonIcon").Value }}

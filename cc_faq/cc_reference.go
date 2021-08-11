@@ -1,3 +1,5 @@
+{{ /* Trigger: Command: reference */ }}
+
 {{$embed := cembed 
     "title" "Reference commands in this server:"
     "color" 1772743

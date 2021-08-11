@@ -1,3 +1,5 @@
+{{ /* Trigger: Command: trials */ }}
+
 {{ $avatar := "https://www.bungie.net/common/destiny2_content/icons/DestinyActivityModeDefinition_e35792b49b249ca5dcdb1e7657ca42b6.png" }}
 {{$embed := cembed 
     "color" 1772743

@@ -1,3 +1,5 @@
+{{ /* Trigger: Command: wish15 */ }}
+
 {{ $status:= "Currently exploring new seasonal lore and story." }}
 {{ $redditurl:= "[Megathread](https://www.reddit.com/r/raidsecrets/comments/9z1bw4/wish_15_megathreadfor_serious_discussion/)" }}
 {{ $avatar := "https://www.bungie.net/common/destiny2_content/icons/fc5791eb2406bf5e6b361f3d16596693.png" }}

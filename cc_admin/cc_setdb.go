@@ -1,3 +1,5 @@
+{{ /* Trigger: Command: setdb */ }}
+
 {{ $args := (joinStr " " .CmdArgs) }}
 {{ $argslength := len .CmdArgs }}
 

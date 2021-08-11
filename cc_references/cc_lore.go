@@ -1,3 +1,5 @@
+{{ /* Trigger: Command: lore */ }}
+
 {{$endpoint:= "https://www.ishtar-collective.net/search/"}}
 {{$suffix:= ""}}
 {{$searchurl:= ""}}
