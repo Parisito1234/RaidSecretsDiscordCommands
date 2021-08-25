@@ -1,5 +1,6 @@
 {{$perms := "ManageServer"}}
 {{ $key := "RSCoinBalance" }}
+{{ $claimKey := "RSCoinStarterClaimed" }}
 {{ $coinIcon := "<:RSStonkCoin:869340420692394095>" }}
 {{ $args := parseArgs 1 "Syntax is `<action> <user> <amount>` - only users with `Manage Server` can modify other user balances."
 	(carg "string" "action - balance, set, add, remove")
@@ -83,6 +84,7 @@
 		{{ range $dbtop }}
 			`{{(userArg .UserID).String}}` - `{{.Key}}` : `{{printf "%v" .Value}}`
 		{{ end }}
+<<<<<<< HEAD
 	{{ else if or (eq $action "give") (eq $action "pay")}}
 		{{ if not ($args.Get 2) }}
 			{{ sendMessage nil "Missing or incorrect format for amount. `-rscoin give|pay @user amount`" }}
@@ -98,6 +100,17 @@
 			{{ sendMessage nil (joinStr "" $callingUser.String " paid " $targetUser.String " " $value $coinIcon) }}
 
 		{{ end }}
+=======
+	{{ else if eq $action "claim" }}
+		{{$claimState := (dbGet $.User.ID $claimKey)
+		{{if eq $claimState}}
+			{{dbSet $.User.ID $claimKey true}}				
+			{{dbSet $.User.ID $key (str ($add $curBalance 10))}
+			{{ sendMessage nil (joinStr "" "`" $.User "` has " (add $curBalance 10) " " $coinIcon )}}
+		{{else}}
+			{{ sendMessage nil "You have already claimed your free RSCoin"
+		{{end}}
+>>>>>>> 0e8fd68ad2a35f1f433e8411eab68161fd96aa1d
 	{{ else if or (eq $action "empty") (eq $action "dump") (eq $action "remove") }}
 		{{ $value := $curBalance }}
 		{{ if not ($args.Get 1) }}
