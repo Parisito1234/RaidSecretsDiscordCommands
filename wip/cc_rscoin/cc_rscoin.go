@@ -60,7 +60,7 @@
 				{{ sendMessage nil (joinStr "" "`" $targetUser "` has " (toInt (dbGet $targetUser.ID $key).Value ) " " $coinIcon )}}
 			{{ end }}
 		{{ end }}
-	{{ else if or (eq $action "pool") (eq $action "lotto") }}
+	{{ else if or (eq $action "pool") (eq $action "lotto") (eq $action "lottery") }}
 		{{ sendMessage nil (joinStr "" "Current Lottery Pool balance is `" $lotteryPool "` " $coinIcon ) }}
 	{{ else if eq $action "resetlotto" }}
 		{{ dbSet 204255221017214977 $key 0 }}
@@ -124,7 +124,7 @@
 		{{ end }}
 		{{ sendMessage nil (joinStr "" "`" $.User "` just dumped " $value " " $coinIcon " into the pool!") }}
 		{{ dbSet 204255221017214977 $key (add $lotteryPool $value) }}
-	{{ else if or (eq $action "pool") (eq $action "lotto") }}
+	{{ else if or (eq $action "pool") (eq $action "lotto") (eq $action "lottery")}}
 		{{ sendMessage nil (joinStr "" "Current Lottery Pool balance is `" $lotteryPool "` " $coinIcon ) }}
 	{{ else }}
 		Improper syntax or missing permissions.
