@@ -1,3 +1,4 @@
+{{$perms := "ManageServer"}}
 {{$e := "<:RSStonkCoin:869340420692394095>"}}
 {{$black := (cslice 1 2 3 4 6 7 8 9)}}
 {{$colour := 0}}
@@ -65,7 +66,9 @@
       {{if eq $win 0}}
         {{$win = $amount}}
         {{$status = "lost"}}
-	      {{dbSet 204255221017214977 $key (add $lotteryPool (roundCeil (div $amount 10))) }}
+        {{if not (in (split (index (split (exec "viewperms") "\n") 2) ", ") $perms)}}
+	        {{dbSet 204255221017214977 $key (add $lotteryPool (roundCeil (div $amount 10))) }}
+        {{end}}
       {{end}}
 
       {{$value := 0}}
