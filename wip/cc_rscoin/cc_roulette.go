@@ -41,7 +41,7 @@
 
       {{$x := sendMessageRetID nil $embed }}
       {{sleep 4}}
-      {{$roll := randInt 18}} {{/*generates random number and allocates colour, odd/even etc*/}}
+      {{$roll := add 1 (randInt 18)}} {{/*generates random number and allocates colour, odd/even etc*/}}
       {{$roll_oddeven := (toInt (mod $roll 2))}}
 
       {{if eq (in $black $roll) true}}
