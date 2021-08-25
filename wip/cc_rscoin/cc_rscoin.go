@@ -84,7 +84,6 @@
 		{{ range $dbtop }}
 			`{{(userArg .UserID).String}}` - `{{.Key}}` : `{{printf "%v" .Value}}`
 		{{ end }}
-<<<<<<< HEAD
 	{{ else if or (eq $action "give") (eq $action "pay")}}
 		{{ if not ($args.Get 2) }}
 			{{ sendMessage nil "Missing or incorrect format for amount. `-rscoin give|pay @user amount`" }}
@@ -100,17 +99,15 @@
 			{{ sendMessage nil (joinStr "" $callingUser.String " paid " $targetUser.String " " $value $coinIcon) }}
 
 		{{ end }}
-=======
 	{{ else if eq $action "claim" }}
-		{{$claimState := (dbGet $.User.ID $claimKey)
-		{{if eq $claimState}}
-			{{dbSet $.User.ID $claimKey true}}				
-			{{dbSet $.User.ID $key (str ($add $curBalance 10))}
+		{{ $claimState := toInt (dbGet $.User.ID $claimKey).Value }}
+		{{ if eq $claimState 0 }}
+			{{ dbSet $.User.ID $claimKey 1}}				
+			{{ dbSet $.User.ID $key (str (add $curBalance 10)) }}
 			{{ sendMessage nil (joinStr "" "`" $.User "` has " (add $curBalance 10) " " $coinIcon )}}
-		{{else}}
-			{{ sendMessage nil "You have already claimed your free RSCoin"
+		{{ else }}
+			{{ sendMessage nil "You have already claimed your free RSCoin" }}
 		{{end}}
->>>>>>> 0e8fd68ad2a35f1f433e8411eab68161fd96aa1d
 	{{ else if or (eq $action "empty") (eq $action "dump") (eq $action "remove") }}
 		{{ $value := $curBalance }}
 		{{ if not ($args.Get 1) }}
