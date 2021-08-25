@@ -8,6 +8,7 @@
 {{if eq (len .Args) 3}}
 
   {{$amount := toInt (index .Args 2)}}
+  {{if gt $amount 50}} {{$amount = 50}} {{sendMessage nil (joinStr "" "You can only bet up to 50 " $e " with coinflip")}} {{end}}
   {{$bet := lower (index .Args 1)}}
   {{if and (lt $amount $curBalance) (ne $amount 0)}}
     {{$winState := 2}}
