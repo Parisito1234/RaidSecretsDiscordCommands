@@ -36,6 +36,7 @@
       {{sendMessage nil (joinStr "" "The coin landed on " $rollType " and " .User.Username " has won `" $amount "`!!!\n" $.User.Username " now has `" (add $curBalance $amount) "` " $e)}}
       {{dbSet $.User.ID $key (toString (add $curBalance $amount))}}
     {{else if eq $winState 2}}
+      {{sendMessage nil (joinStr "" "Nope! It was " $rollType "!")}}
       {{execAdmin "thrallpit" $.User (joinStr "" $amount "h CoinFlips")}}
     {{end}}
 
