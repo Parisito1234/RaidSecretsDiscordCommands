@@ -3,43 +3,46 @@
 {{$colour := 0}}
 {{$win := 0}}
 {{$key := "RSCoinBalance" }}
-{{$tadBalance := toInt (dbGet 255025368149393408 $key).Value }}
+{{ $lotteryPool := toInt ((dbGet 204255221017214977 $key).Value) }}
 {{$types := (cslice "red" "black" "green" "odd" "even" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18")}}
 {{$imgur := sdict
-"1" "https://i.imgur.com/fDtHkij.png"
-"2" "https://i.imgur.com/CPUvkRj.png"
-"3" "https://i.imgur.com/drgbCf3.png"
-"4" "https://i.imgur.com/9SsM5ju.png"
-"5" "https://i.imgur.com/foJhwxa.png"
-"6" "https://i.imgur.com/5ZXgbTl.png"
-"7" "https://i.imgur.com/VhGaKxB.png"
-"8" "https://i.imgur.com/LRSjXKK.png"
-"9" "https://i.imgur.com/8mD7DSZ.png"
-"10" "https://i.imgur.com/rpHQ2YW.png"
-"11" "https://i.imgur.com/kaaspHO.png"
-"12" "https://i.imgur.com/P21TYin.png"
-"13" "https://i.imgur.com/xSUvKex.png"
-"14" "https://i.imgur.com/D5bGDzt.png"
-"15" "https://i.imgur.com/CiDpI7g.png"
-"16" "https://i.imgur.com/ubWRqXi.png"
-"17" "https://i.imgur.com/9yiWKXV.png"
-"18" "https://i.imgur.com/FyWxGyM.png"
+"1" "fDtHkij"
+"2" "CPUvkRj"
+"3" "drgbCf3"
+"4" "9SsM5ju"
+"5" "foJhwxa"
+"6" "5ZXgbTl"
+"7" "VhGaKxB"
+"8" "LRSjXKK"
+"9" "8mD7DSZ"
+"10" "rpHQ2YW"
+"11" "kaaspHO"
+"12" "P21TYin"
+"13" "xSUvKex"
+"14" "D5bGDzt"
+"15" "CiDpI7g"
+"16" "ubWRqXi"
+"17" "9yiWKXV"
+"18" "FyWxGyM"
 
   }}
 
 {{$source := "https://i.imgur.com/PKryC4s.png"}}
 {{if eq (len .Args) 3}}
-  {{$type := index .Args 1}}
+  {{$type := lower (index .Args 1)}}
   {{$amount := toInt (index .Args 2)}}
+
   {{if in $types $type}}
     {{ $curBalance := toInt (dbGet $.User.ID $key).Value }}
+
     {{if and (ge $curBalance $amount) (gt $amount 0)}}
-      {{ $embed := cembed "title" (joinStr "" .User.Username " is at the roulette table") "description" (joinStr "" "They have bet `" (toString $amount) "` that the ball will land on `" $type "`.") "image" (sdict "url" $source)}}
+      {{ $embed := cembed "title" (joinStr "" "__" .User.Username "__ is at the roulette table") "description" (joinStr "" "They have bet `" (toString $amount) "` that the ball will land on `" $type "`.") "thumbnail" (sdict "url" $source)}}
 
       {{$x := sendMessageRetID nil $embed }}
       {{sleep 4}}
       {{$roll := randInt 18}} {{/*generates random number and allocates colour, odd/even etc*/}}
       {{$roll_oddeven := (toInt (mod $roll 2))}}
+
       {{if eq (in $black $roll) true}}
         {{$colour = "black"}}
       {{else if or (eq $roll 5) (eq  $roll 10)}}
@@ -58,38 +61,52 @@
         {{$win = (mult 14 $amount)}}
       {{end}}
       {{$status := "won"}}
+
       {{if eq $win 0}}
         {{$win = $amount}}
         {{$status = "lost"}}
-	{{dbSet 255025368149393408 $key  (str (add $tadBalance $amount)) }}
+	      {{dbSet 204255221017214977 $key (add $lotteryPool (roundCeil (div $amount 10))) }}
       {{end}}
 
       {{$value := 0}}
+
       {{if eq $status "lost"}}
         {{$value = sub $curBalance $amount}}
       {{else}}
+
         {{if lt (add $curBalance $win) 0}}
           {{$value = $curBalance}}
           {{$status = "BROKEN INTEGER OVERFLOW, WE DIDNT TOUCH YOUR BALANCE"}}
         {{else}}
           {{$value = add $curBalance $win}}
         {{end}}
+
       {{end}}
+
       {{ dbSet $.User.ID $key  (str $value) }}
-      {{$link := $imgur.Get (toString $roll)}}
+      {{$link := (joinStr "" "https://i.imgur.com/" ($imgur.Get (toString $roll)) ".png" )}}
       {{$img := (sdict "url" $link)}}
       {{$embed2 := cembed
         "title" (joinStr "" .User.Username " has " $status " `" $win "` " $e " at the roulette table")
-        "description" (joinStr "" "The ball landed on " $roll ".\n\n"
-          .User.Username " now has " (toInt (dbGet $.User.ID $key).Value) $e)
-        "image" $img}}
+        "description" (joinStr "" "The ball landed on " $roll ".\n\n" .User.Username " now has " (toInt (dbGet $.User.ID $key).Value) $e)
+        "thumbnail" $img }}
+
+      {{if eq $status "lost"}}
+        {{$embed2 = cembed
+          "title" (joinStr "" .User.Username " has " $status " `" $win "` " $e " at the roulette table")
+          "description" (joinStr "" "The ball landed on " $roll ".\n\n" .User.Username " now has " (toInt (dbGet $.User.ID $key).Value) $e " \n *10% of their loss has gone to the lottery pool.*")
+          "thumbnail" $img }}
+      {{end}}
+
       {{editMessage nil $x $embed2}}
     {{else}}
       Not enough {{$e}}, nerd.
     {{end}}
+
   {{else}}
-  Valid bet types are: ```red, black, green, odd, even, or any number from 1-18```
+    Valid bet types are: `red, black, green, odd, even, or any number from 1-18`
   {{end}}
+
 {{else}}
   Nice try, but `-roulette <red|black|green|odd|even|number> <bet-amount>` is the correct syntax!
 {{end}}
