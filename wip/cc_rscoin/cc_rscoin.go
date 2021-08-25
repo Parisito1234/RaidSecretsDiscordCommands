@@ -83,6 +83,21 @@
 		{{ range $dbtop }}
 			`{{(userArg .UserID).String}}` - `{{.Key}}` : `{{printf "%v" .Value}}`
 		{{ end }}
+	{{ else if or (eq $action "give") (eq $action "pay")}}
+		{{ if not ($args.Get 2) }}
+			{{ sendMessage nil "Missing or incorrect format for amount. `-rscoin give|pay @user amount`" }}
+		{{ else }}
+			{{/*Take calling user's balance (user) and move $value to $targetUser's balance*/}}
+			{{ $targetUser = (userArg ($args.Get 1) ) }}
+			{{ $targetBalance := toInt (dbGet $targetUser.ID $key).Value }}
+			{{ $callingUser := $.User }}
+			{{ $callingBalance := toInt (dbGet $callingUser.ID $key).Value }}
+			{{ $value := toInt ($args.Get 2) }}
+			{{ dbSet $targetUser.ID $key (add $targetBalance $value) }}
+			{{ dbSet $callingUser.ID $key (sub $callingBalance $value) }}
+			{{ sendMessage nil (joinStr "" $callingUser.String " paid " $targetUser.String " " $value $coinIcon) }}
+
+		{{ end }}
 	{{ else if or (eq $action "empty") (eq $action "dump") (eq $action "remove") }}
 		{{ $value := $curBalance }}
 		{{ if not ($args.Get 1) }}
