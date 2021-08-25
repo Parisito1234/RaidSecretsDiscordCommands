@@ -36,8 +36,7 @@
       {{sendMessage nil (joinStr "" "The coin landed on " $rollType " and " .User.Username " has won `" $amount "`!!!\n" $.User.Username " now has `" (add $curBalance $amount) "` " $e)}}
       {{dbSet $.User.ID $key (toString (add $curBalance $amount))}}
     {{else if eq $winState 2}}
-      {{execAdmin "mute" $.User (joinStr "" $amount "h CoinFlips")}}
-      {{sendMessage nil (joinStr "" .User.Username " lost and was sent to the thrallway for " $amount " hours.")}}
+      {{execAdmin "thrallpit" $.User (joinStr "" $amount "h CoinFlips")}}
     {{end}}
 
   {{else}}
