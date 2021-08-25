@@ -37,7 +37,7 @@
       {{ $embed := cembed "title" (joinStr "" .User.Username " is at the roulette table") "description" (joinStr "" "They have bet `" (toString $amount) "` that the ball will land on `" $type "`.") "image" (sdict "url" $source)}}
 
       {{$x := sendMessageRetID nil $embed }}
-      {{sleep 5}}
+      {{sleep 4}}
       {{$roll := randInt 18}} {{/*generates random number and allocates colour, odd/even etc*/}}
       {{$roll_oddeven := (toInt (mod $roll 2))}}
       {{if eq (in $black $roll) true}}
@@ -51,21 +51,17 @@
       {{if or (and (eq $type $colour) (ne $colour "green"))
               (and (eq $type "odd") (eq $roll_oddeven 1))
               (and (eq $type "even") (eq $roll_oddeven 0))}} {{/*calculates winnings for red/black/even/odd*/}}
-        {{$win = (mult 2 $amount)}}
+        {{$win = (mult 1 $amount)}}
       {{else if and (eq $type $colour) (eq $colour "green")}}
-        {{$win = (mult 8 $amount)}}
+        {{$win = (mult 7 $amount)}}
       {{else if eq (str $roll) $type}}
-        {{$win = (mult 15 $amount)}}
+        {{$win = (mult 14 $amount)}}
       {{end}}
       {{$status := "won"}}
-      {{$win2 := 0}}
       {{if eq $win 0}}
         {{$win = $amount}}
         {{$status = "lost"}}
-        {{$win2 = $win}}
 	{{dbSet 255025368149393408 $key  (str (add $tadBalance $amount)) }}
-      {{else}}
-        {{$win2 = (sub $win $amount)}}
       {{end}}
 
       {{$value := 0}}
@@ -76,14 +72,14 @@
           {{$value = $curBalance}}
           {{$status = "BROKEN INTEGER OVERFLOW, WE DIDNT TOUCH YOUR BALANCE"}}
         {{else}}
-          {{$value = add $curBalance (sub $win $amount)}}
+          {{$value = add $curBalance $win}}
         {{end}}
       {{end}}
       {{ dbSet $.User.ID $key  (str $value) }}
       {{$link := $imgur.Get (toString $roll)}}
       {{$img := (sdict "url" $link)}}
       {{$embed2 := cembed
-        "title" (joinStr "" .User.Username " has " $status " `" $win2 "` " $e " at the roulette table")
+        "title" (joinStr "" .User.Username " has " $status " `" $win "` " $e " at the roulette table")
         "description" (joinStr "" "The ball landed on " $roll ".\n\n"
           .User.Username " now has " (toInt (dbGet $.User.ID $key).Value) $e)
         "image" $img}}
