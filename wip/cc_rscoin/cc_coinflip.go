@@ -35,8 +35,14 @@
       {{sendMessage nil (joinStr "" "The coin landed on " $rollType " and " .User.Username " has won `" $amount "`!!!\n" $.User.Username " now has `" (add $curBalance $amount) "` " $e)}}
       {{dbSet $.User.ID $key (toString (add $curBalance $amount))}}
     {{else if eq $winState 2}}
-      {{execAdmin "mute" $.User (joinStr "" $amount "h CoinFlips")}}
-      {{sendMessage nil (joinStr "" .User.Username " lost and was sent to the thrallway for " $amount " hours.")}}
+      {{$time := 0.0}}
+      {{if lt $amount 108}}
+        {{$time = (mult (sub (pow 1.03 $amount) 0.75) 60)}}
+      {{else}}
+        {{$time = (mult (sub (mult 0.25 $amount) 3.75) 60)}}
+      {{end}}
+      {{execAdmin "mute" $.User (joinStr "" $time "m CoinFlips")}}
+      {{sendMessage nil (joinStr "" .User.Username " lost and was sent to the thrallway for " $time " mins.")}}
     {{end}}
 
   {{else}}
