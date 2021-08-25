@@ -37,7 +37,7 @@
       {{dbSet $.User.ID $key (toString (add $curBalance $amount))}}
     {{else if eq $winState 2}}
       {{sendMessage nil (joinStr "" "Nope! It was " $rollType "! To the thrallpit with you!\n*Muted for " $amount " hours*")}}
-      {{$a := execAdmin "mute" $.User (joinStr "" $amount "h CoinFlips")}}
+      {{$a := execAdmin "mute" $.User (joinStr "" $amount "h") "coinflips"}}
     {{end}}
 
   {{else}}
