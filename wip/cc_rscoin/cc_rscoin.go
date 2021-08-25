@@ -25,7 +25,7 @@
 	{{ $curBalance := toInt (dbGet $targetUser.ID $key).Value }}
 
 	{{ if or (eq $action "balance") (eq $action "bal") }}
-		Balance, with perms!
+		{{/* Balance, with perms! */}}
 		{{ $curBalance := toInt (dbGet $targetUser.ID $key).Value }}
 		{{ sendMessage nil (joinStr "" "`" $targetUser "` has " $curBalance " " $coinIcon )}}
 	{{ else if or (eq $action "add") (eq $action "give") }} 
