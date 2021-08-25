@@ -1,5 +1,6 @@
 {{$perms := "ManageServer"}}
 {{ $key := "RSCoinBalance" }}
+{{ $claimKey := "RSCoinStarterClaimed" }}
 {{ $coinIcon := "<:RSStonkCoin:869340420692394095>" }}
 {{ $args := parseArgs 1 "Syntax is `<action> <user> <amount>` - only users with `Manage Server` can modify other user balances."
 	(carg "string" "action - balance, set, add, remove")
@@ -59,7 +60,7 @@
 				{{ sendMessage nil (joinStr "" "`" $targetUser "` has " (toInt (dbGet $targetUser.ID $key).Value ) " " $coinIcon )}}
 			{{ end }}
 		{{ end }}
-	{{ else if or (eq $action "pool") (eq $action "lotto") }}
+	{{ else if or (eq $action "pool") (eq $action "lotto") (eq $action "lottery") }}
 		{{ sendMessage nil (joinStr "" "Current Lottery Pool balance is `" $lotteryPool "` " $coinIcon ) }}
 	{{ else if eq $action "resetlotto" }}
 		{{ dbSet 204255221017214977 $key 0 }}
@@ -83,6 +84,30 @@
 		{{ range $dbtop }}
 			`{{(userArg .UserID).String}}` - `{{.Key}}` : `{{printf "%v" .Value}}`
 		{{ end }}
+	{{ else if or (eq $action "give") (eq $action "pay")}}
+		{{ if not ($args.Get 2) }}
+			{{ sendMessage nil "Missing or incorrect format for amount. `-rscoin give|pay @user amount`" }}
+		{{ else }}
+			{{/*Take calling user's balance (user) and move $value to $targetUser's balance*/}}
+			{{ $targetUser = (userArg ($args.Get 1) ) }}
+			{{ $targetBalance := toInt (dbGet $targetUser.ID $key).Value }}
+			{{ $callingUser := $.User }}
+			{{ $callingBalance := toInt (dbGet $callingUser.ID $key).Value }}
+			{{ $value := toInt ($args.Get 2) }}
+			{{ dbSet $targetUser.ID $key (add $targetBalance $value) }}
+			{{ dbSet $callingUser.ID $key (sub $callingBalance $value) }}
+			{{ sendMessage nil (joinStr "" $callingUser.String " paid " $targetUser.String " " $value $coinIcon) }}
+
+		{{ end }}
+	{{ else if eq $action "claim" }}
+		{{ $claimState := toInt (dbGet $.User.ID $claimKey).Value }}
+		{{ if eq $claimState 0 }}
+			{{ dbSet $.User.ID $claimKey 1}}				
+			{{ dbSet $.User.ID $key (str (add $curBalance 10)) }}
+			{{ sendMessage nil (joinStr "" "`" $.User "` has " (add $curBalance 10) " " $coinIcon )}}
+		{{ else }}
+			{{ sendMessage nil "You have already claimed your free RSCoin" }}
+		{{end}}
 	{{ else if or (eq $action "empty") (eq $action "dump") (eq $action "remove") }}
 		{{ $value := $curBalance }}
 		{{ if not ($args.Get 1) }}
@@ -99,7 +124,7 @@
 		{{ end }}
 		{{ sendMessage nil (joinStr "" "`" $.User "` just dumped " $value " " $coinIcon " into the pool!") }}
 		{{ dbSet 204255221017214977 $key (add $lotteryPool $value) }}
-	{{ else if or (eq $action "pool") (eq $action "lotto") }}
+	{{ else if or (eq $action "pool") (eq $action "lotto") (eq $action "lottery")}}
 		{{ sendMessage nil (joinStr "" "Current Lottery Pool balance is `" $lotteryPool "` " $coinIcon ) }}
 	{{ else }}
 		Improper syntax or missing permissions.
