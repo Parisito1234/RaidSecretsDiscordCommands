@@ -96,8 +96,8 @@
 
       {{if eq $status "lost"}}
         {{$embed2 = cembed
-          "title" (joinStr "" ":x:" .User.Username " has " $status " `" $win "` " $e " at the roulette table")
-          "description" (joinStr "" "The ball landed on " $roll ".\n\n" .User.Username " now has " (toInt (dbGet $.User.ID $key).Value) $e " \n *10% of their loss has gone to the lottery pool.*")
+          "title" (joinStr "" .User.Username " has " $status " `" $win "` " $e " at the roulette table")
+          "description" (joinStr "" ":x: The ball landed on " $roll ".\n\n" .User.Username " now has " (toInt (dbGet $.User.ID $key).Value) $e " \n *10% of their loss has gone to the lottery pool.*")
           "thumbnail" $img }}
       {{end}}
 
