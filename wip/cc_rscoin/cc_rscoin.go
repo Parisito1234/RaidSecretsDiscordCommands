@@ -101,7 +101,7 @@
 			{{ if lt $value 0 }} {{ $value = mult $value -1 }} {{ end }}
 			{{ dbSet $targetUser.ID $key (add $targetBalance $value) }}
 			{{ dbSet $callingUser.ID $key (sub $callingBalance $value) }}
-			{{ sendMessage nil (joinStr "" $callingUser.String " paid " $targetUser.String " " $value $coinIcon) }}
+			{{ sendMessage nil (joinStr "" "`" $callingUser.String "` paid `" $targetUser.String "` " $value $coinIcon) }}
 
 		{{ end }}
 	{{ else if eq $action "claim" }}
