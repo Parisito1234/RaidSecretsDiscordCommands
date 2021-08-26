@@ -89,11 +89,16 @@
 			{{ sendMessage nil "Missing or incorrect format for amount. `-rscoin give|pay @user amount`" }}
 		{{ else }}
 			{{/*Take calling user's balance (user) and move $value to $targetUser's balance*/}}
+			
 			{{ $targetUser = (userArg ($args.Get 1) ) }}
 			{{ $targetBalance := toInt (dbGet $targetUser.ID $key).Value }}
 			{{ $callingUser := $.User }}
 			{{ $callingBalance := toInt (dbGet $callingUser.ID $key).Value }}
 			{{ $value := toInt ($args.Get 2) }}
+			{{ if gt $value $curBalance}}
+				{{ $value = $curBalance}}
+			{{ end }}
+			{{ if lt $value 0 }} {{ $value = mult $value -1 }} {{ end }}
 			{{ dbSet $targetUser.ID $key (add $targetBalance $value) }}
 			{{ dbSet $callingUser.ID $key (sub $callingBalance $value) }}
 			{{ sendMessage nil (joinStr "" $callingUser.String " paid " $targetUser.String " " $value $coinIcon) }}
