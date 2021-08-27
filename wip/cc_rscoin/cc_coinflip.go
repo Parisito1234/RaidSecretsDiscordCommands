@@ -19,7 +19,7 @@
         {{$winState  = 1}}
       {{end}}
     {{else if or (eq $bet "tails") (eq $bet "tail")}}
-      {{if eq $roll 2}}
+      {{if eq $roll 0}}
         {{$winState = 1}}
       {{end}}
     {{else}}
