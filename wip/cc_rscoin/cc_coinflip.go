@@ -2,7 +2,7 @@
 {{$e := "<:RSStonkCoin:869340420692394095>"}}
 {{$key := "RSCoinBalance" }}
 {{ $lotteryPool := toInt ((dbGet 204255221017214977 $key).Value) }}
-{{$roll := randInt 2}}
+{{$roll := (add (randInt 1) 1)}}
 {{$rollType := 0}}
 {{$curBalance := toInt (dbGet $.User.ID $key).Value}}
 {{if eq (len .Args) 3}}
