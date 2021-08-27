@@ -37,10 +37,10 @@
       {{sendMessage nil (joinStr "" "The coin landed on " $rollType " and " .User.Username " has won `" $amount "`!!!\n" $.User.Username " now has `" (add $curBalance $amount) "` " $e)}}
       {{dbSet $.User.ID $key (toString (add $curBalance $amount))}}
     {{else if eq $winState 2}}
-      {{dbSet $.User.ID $key (toString (sub $curBalance (div $amount 2)))}}
+      {{dbSet $.User.ID $key (sub $curBalance $amount )}}
       {{$amount = mult $amount 10}}
-      {{sendMessage nil (joinStr "" "Nope! It was " $rollType "! To the thrallpit with you!\n*Muted for " $amount " minutes*")}}
-      {{$a := execAdmin "mute" $.User (joinStr "" $amount "m") "coinflips"}}
+      {{sendMessage nil (joinStr "" "Nope! It was " $rollType "! You lost your bet!")}}
+      {{/*$a := execAdmin "mute" $.User (joinStr "" $amount "m") "coinflips"*/}}
     {{end}}
 
   {{else}}
