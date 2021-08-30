@@ -9,5 +9,5 @@ Gamifying RaidSecrets, one command at a time.
 # Command Group Settings
 - Whitelist roles: `Everyone`
 - Blacklist roles: `None`
-- Channels these commands can be used in: `Everywhere`
+- Channels these commands can be used in: `Casino`
 - Channels blacklisted: `None`
