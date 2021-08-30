@@ -3,6 +3,8 @@
 {{$e := "<:RSStonkCoin:869340420692394095>"}}
 {{$initialData := (dbGet $.User.ID $blackjackKey).Value}}
 
+{{ $silent := ""}}
+
 {{ define "remove" }}
     {{ $data := .Data }} {{ $index := .Index }}
     {{ $last := sub (len $data) 1 }}
@@ -103,7 +105,6 @@
 				{{editMessage nil $x $embed}}
 				{{$temp := (sdict "PlayerHand" $playerhand2 "DealerHand" $dealerhand2 "Ace" $ace "PlayerTotal" $playertotal "Deck" $deck "X" $x "Bet" $bet)}}
 				{{dbSetExpire $.User.ID $blackjackKey $temp 120}}
-
 			{{else if gt $playertotal 21}}
 				{{$embed := cembed
 				"title" (joinStr "" "__" $.User.Username "__ is at the blackjack table.")
@@ -117,7 +118,6 @@
 				{{editMessage nil $x $embed}}
 				{{dbDel $.User.ID $blackjackKey}}
 				{{deleteAllMessageReactions nil $x}}
-
 			{{end}}
 
 			{{else if eq $.Reaction.Emoji.ID 881273109670412368}}
@@ -130,7 +130,7 @@
 			{{template "check" $data}}{{$dealertotal := $data.Tot}}{{$dealerace := $data.Ace}}
 			{{$state := 0}} {{/* 0 = empty, 1 = player wins, 2 = dealer wins, 3 = draw*/}}
 
-			{{range seq 0 15}}
+			{{range seq 0 8}}
 				{{if or (lt $dealertotal 17) (and (gt $dealertotal 21) (le (sub $dealertotal (mult 10 $dealerace)) 17))}}
 					{{$roll := randInt (sub (len ($deck)) 1)}}
 					{{$card := (index $deck $roll)}}
@@ -166,16 +166,12 @@
 			{{ template "convert" $data }} {{ $prettydealerhand := $data.Ret }}
 
 			{{$player := ""}}
-			{{range $index, $element := $prettyplayerhand}}
-			{{$player = joinStr "" $player " " $element " "}}
-			{{end}}
+			{{range $index, $element := $prettyplayerhand}}{{$player = joinStr "" $player " " $element " "}}{{end}}
 
 			{{range $index, $element := $dealerhand}}
 				{{if gt $index 0}}
 					{{$dealer2 := ""}}
-					{{range $i, $el := (slice $prettydealerhand 0 (add $index 1))}}
-						{{$dealer2 = joinStr "" $dealer2 " " $el " "}}
-					{{end}}
+					{{range $i, $el := (slice $prettydealerhand 0 (add $index 1))}}{{$dealer2 = joinStr "" $dealer2 " " $el " "}}{{end}}
 					{{$embed := cembed
 					"title" (joinStr "" "__" $.User.Username "__ is at the blackjack table.")
 					"description" "The game is underway..."
@@ -183,9 +179,7 @@
 					(sdict "name" "Bet" "value" (joinStr "" $e " `" $bet "`")  "inline" true )
 					(sdict "name" $.User.Username "value" $player "inline" true)
 					(sdict "name" "Sweeper" "value" $dealer2 "inline" true)
-					)}}
-					{{editMessage nil $x $embed}}
-					{{sleep 3}}
+					)}}{{editMessage nil $x $embed}}{{sleep 3}}
 				{{end}}
 			{{end}}
 
@@ -202,18 +196,18 @@
 				(sdict "name" $.User.Username "value" (joinStr "" $player "\nTotal: " $playertotal) "inline" true)
 				(sdict "name" "Sweeper" "value" (joinStr "" $dealer2 "\nTotal: " $dealertotal) "inline" true)
 			)}}
-			{{editMessage nil $x $embed}}
+			{{$silent = editMessage nil $x $embed}}
 
 			{{$balance := toInt (dbGet $.User.ID $key).Value }}
 			{{$endMsg := (sdict "temp" "temp")}}
 			{{if eq $state 1}}
-				{{$endMsg = (sdict "name" "**WIN!!**" "value" (joinStr "" "`" $bet "` " $e " has been added to your balance!") "inline" false) }}
-				{{dbSet $.User.ID $key (add $balance $bet)}}
+				{{dbSet $.User.ID $key (add $balance (mult $bet 2))}}
+				{{$endMsg = (sdict "name" "**WIN!!**" "value" (joinStr "" "`" $bet "` " $e " has been added to your balance!\n`" $.User.Username "` now has " $e " `" (dbGet $.User.ID $key).Value "`") "inline" false) }}
 			{{else if eq $state 2}}
-				{{$endMsg = (sdict "name" "**LOST!!**" "value" "Sweeper sweeps the money on the table into his pockets..." "inline" false) }}
-				{{dbSet $.User.ID $key (sub $balance $bet)}}
+				{{$endMsg = (sdict "name" "**LOST!!**" "value" (joinStr "" "Sweeper sweeps the money on the table into his pockets...\n`" $.User.Username "` now has " $e " `" (dbGet $.User.ID $key).Value "`" ) "inline" false) }}
 			{{else if eq $state 3}}
-				{{$endMsg = (sdict "name" "**DRAW!!**" "value" "You pick the money up from the table, and add it back to your pocket..." "inline" false)}}
+				{{dbSet $.User.ID $key (add $balance $bet)}}
+				{{$endMsg = (sdict "name" "**DRAW!!**" "value" (joinStr "" "You pick the money up from the table, and add it back to your pocket...\n`" $.User.Username "` now has " $e " `" (dbGet $.User.ID $key).Value "`") "inline" false)}}
 			{{end}}
 
 			{{$embed := cembed
@@ -225,9 +219,9 @@
 				(sdict "name" "Sweeper" "value" (joinStr "" $dealer2 "\nTotal: " $dealertotal) "inline" true)
 				$endMsg)
 			}}
-			{{editMessage nil $x $embed}}
+			{{$silent = editMessage nil $x $embed}}
 
-			{{$silent := dbDel $.User.ID $blackjackKey}}
+			{{$silent = dbDel $.User.ID $blackjackKey}}
 
 		{{end}}
 	{{end}}

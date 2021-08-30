@@ -138,7 +138,7 @@
             (sdict "name" "Bet" "value" (joinStr "" $e " `" $bet "`")  "inline" true )
             (sdict "name" $.User.Username "value" $player "inline" true)
             (sdict "name" "Sweeper" "value" (joinStr "" (toString (index $dealerhand 0)) "  ??") "inline" true)
-            (sdict "name" "__**Nice!**__" "value" (joinStr "" "***BLACKJACK!!! You have won `" $bet "` !!!***") "inline" false)
+            (sdict "name" "__**Nice!**__" "value" (joinStr "" "***BLACKJACK! You have won `" $bet "` !***\n`" $.User.Username "` now has " $e " `" (dbGet $.User.ID $key).Value "`") "inline" false)
           )}}
         {{sendMessage nil $embed}}
         {{dbSet $.User.ID $key (add $newbalance (mult $bet 2))}}

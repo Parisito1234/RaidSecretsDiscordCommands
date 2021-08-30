@@ -27,7 +27,7 @@
 	{{ if or (eq $action "balance") (eq $action "bal") }}
 		{{/* Balance, with perms! */}}
 		{{ $curBalance := toInt (dbGet $targetUser.ID $key).Value }}
-		{{ sendMessage nil (joinStr "" "`" $targetUser "` has " $curBalance " " $coinIcon )}}
+		{{ sendMessage nil (joinStr "" "`" $targetUser.Username "` has " $curBalance " " $coinIcon )}}
 	{{ else if or (eq $action "add") (eq $action "give") }} 
 		{{ if not ($args.Get 2) }}
 			{{ sendMessage nil "Missing or incorrect format for amount. `-rscoin add|give @user amount`" }}
@@ -35,7 +35,7 @@
 			{{ $value := toInt ($args.Get 2) }}
 			{{ $newBalance := add $curBalance $value }}
 			{{ dbSet $targetUser.ID $key (str $newBalance) }}
-			{{ sendMessage nil (joinStr "" "`" $targetUser "` has " (toInt (dbGet $targetUser.ID $key).Value ) " " $coinIcon )}}
+			{{ sendMessage nil (joinStr "" "`" $targetUser.Username "` has `" (toInt (dbGet $targetUser.ID $key).Value ) "` " $coinIcon )}}
 		{{ end }}
 	{{ else if or (eq $action "remove") (eq $action "take") }}
 		{{ if not ($args.Get 2) }}
@@ -45,7 +45,7 @@
 			{{ $newBalance := sub $curBalance $value }}
 			{{ if lt $newBalance 0 }} {{$newBalance = 0 }} {{ end }}
 			{{ dbSet $targetUser.ID $key (str $newBalance) }}
-			{{ sendMessage nil (joinStr "" "`" $targetUser "` has " (toInt (dbGet $targetUser.ID $key).Value ) " " $coinIcon )}}
+			{{ sendMessage nil (joinStr "" "`" $targetUser.Username "` has `" (toInt (dbGet $targetUser.ID $key).Value ) "` " $coinIcon )}}
 		{{ end }}
 	{{ else if eq $action "set" }}
 		{{/* Set balance! */}}
@@ -57,7 +57,7 @@
 				{{ sendMessage nil "Can't set a value lower than 0." }}
 			{{ else }}
 				{{ dbSet $targetUser.ID $key  (str $value) }}
-				{{ sendMessage nil (joinStr "" "`" $targetUser "` has " (toInt (dbGet $targetUser.ID $key).Value ) " " $coinIcon )}}
+				{{ sendMessage nil (joinStr "" "`" $targetUser.Username "` has `" (toInt (dbGet $targetUser.ID $key).Value ) "` " $coinIcon )}}
 			{{ end }}
 		{{ end }}
 	{{ else if or (eq $action "pool") (eq $action "lotto") (eq $action "lottery") }}
@@ -83,11 +83,11 @@
 		{{$embed := cembed 
 			"title" (joinStr "" "__" $coinIcon " Leaderboards__")
 			"color" 1772743
-			"description" (joinStr "" "**1:** `" (userArg (index $displayList 0)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 0) $key).Value) "`"
-			"\n**2:** `" (userArg (index $displayList 1)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 1) $key).Value) "`"
-			"\n**3:** `" (userArg (index $displayList 2)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 2) $key).Value) "`"
-			"\n**4:** `" (userArg (index $displayList 3)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 3) $key).Value) "`"
-			"\n**5:** `" (userArg (index $displayList 4)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 4) $key).Value) "`" )
+			"description" (joinStr "" "**1:** `" (userArg (index $displayList 0)).Username "` : " $coinIcon " `" (toInt (dbGet (index $displayList 0) $key).Value) "`"
+			"\n**2:** `" (userArg (index $displayList 1)).Username "` : " $coinIcon " `" (toInt (dbGet (index $displayList 1) $key).Value) "`"
+			"\n**3:** `" (userArg (index $displayList 2)).Username "` : " $coinIcon " `" (toInt (dbGet (index $displayList 2) $key).Value) "`"
+			"\n**4:** `" (userArg (index $displayList 3)).Username "` : " $coinIcon " `" (toInt (dbGet (index $displayList 3) $key).Value) "`"
+			"\n**5:** `" (userArg (index $displayList 4)).Username "` : " $coinIcon " `" (toInt (dbGet (index $displayList 4) $key).Value) "`" )
 			"footer" (sdict "text" (joinStr "" "Current Lottery Balance: " $lotteryPool ))
 		}}
 		{{ sendMessage nil $embed }}
@@ -100,7 +100,7 @@
 
 	{{ $curBalance := toInt (dbGet $.User.ID $key).Value }}
 	{{ if or (eq $action "balance") (eq $action "bal") }}
-		{{ sendMessage nil (joinStr "" "`" $.User "` has " $curBalance " " $coinIcon )}}
+		{{ sendMessage nil (joinStr "" "`" $.User.Username "` has " $curBalance " " $coinIcon )}}
 	{{ else if or (eq $action "top") (eq $action "list") }}
 		{{ $userList := cslice }}
 		{{ $dbtop := dbTopEntries $key 20 0 }}
@@ -119,11 +119,11 @@
 		{{$embed := cembed 
 			"title" (joinStr "" "__" $coinIcon " Leaderboards__")
 			"color" 1772743
-			"description" (joinStr "" "**1:** `" (userArg (index $displayList 0)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 0) $key).Value) "`"
-			"\n**2:** `" (userArg (index $displayList 1)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 1) $key).Value) "`"
-			"\n**3:** `" (userArg (index $displayList 2)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 2) $key).Value) "`"
-			"\n**4:** `" (userArg (index $displayList 3)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 3) $key).Value) "`"
-			"\n**5:** `" (userArg (index $displayList 4)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 4) $key).Value) "`" )
+			"description" (joinStr "" "**1:** `" (userArg (index $displayList 0)).Username "` : " $coinIcon " `" (toInt (dbGet (index $displayList 0) $key).Value) "`"
+			"\n**2:** `" (userArg (index $displayList 1)).Username "` : " $coinIcon " `" (toInt (dbGet (index $displayList 1) $key).Value) "`"
+			"\n**3:** `" (userArg (index $displayList 2)).Username "` : " $coinIcon " `" (toInt (dbGet (index $displayList 2) $key).Value) "`"
+			"\n**4:** `" (userArg (index $displayList 3)).Username "` : " $coinIcon " `" (toInt (dbGet (index $displayList 3) $key).Value) "`"
+			"\n**5:** `" (userArg (index $displayList 4)).Username "` : " $coinIcon " `" (toInt (dbGet (index $displayList 4) $key).Value) "`" )
 			"footer" (sdict "text" (joinStr "" "Current Lottery Balance: " $lotteryPool ))
 		}}
 		{{ sendMessage nil $embed }}
@@ -145,7 +145,7 @@
 			{{ if lt $value 0 }} {{ $value = mult $value -1 }} {{ end }}
 			{{ dbSet $targetUser.ID $key (add $targetBalance $value) }}
 			{{ dbSet $callingUser.ID $key (sub $callingBalance $value) }}
-			{{ sendMessage nil (joinStr "" "`" $callingUser.String "` paid `" $targetUser.String "` " $value $coinIcon) }}
+			{{ sendMessage nil (joinStr "" "`" $callingUser.Username "` paid `" $targetUser.Username "` `" $value "`" $coinIcon) }}
 
 		{{ end }}
 	{{ else if eq $action "claim" }}
@@ -153,7 +153,7 @@
 		{{ if eq $claimState 0 }}
 			{{ dbSet $.User.ID $claimKey 1}}				
 			{{ dbSet $.User.ID $key (str (add $curBalance 10)) }}
-			{{ sendMessage nil (joinStr "" "`" $.User "` has " (add $curBalance 10) " " $coinIcon )}}
+			{{ sendMessage nil (joinStr "" "`" $.User.Username "` has `" (add $curBalance 10) "` " $coinIcon )}}
 		{{ else }}
 			{{ sendMessage nil "You have already claimed your free RSCoin" }}
 		{{end}}
@@ -171,7 +171,7 @@
 			{{ if lt $newBalance 0 }} {{$newBalance = 0 }} {{ end }}
 			{{ dbSet $.User.ID $key (str $newBalance) }}
 		{{ end }}
-		{{ sendMessage nil (joinStr "" "`" $.User "` just dumped " $value " " $coinIcon " into the pool!") }}
+		{{ sendMessage nil (joinStr "" "`" $.User.Username "` just dumped " $value " " $coinIcon " into the pool!") }}
 		{{ dbSet 204255221017214977 $key (add $lotteryPool $value) }}
 	{{ else if or (eq $action "pool") (eq $action "lotto") (eq $action "lottery")}}
 		{{ sendMessage nil (joinStr "" "Current Lottery Pool balance is `" $lotteryPool "` " $coinIcon ) }}
