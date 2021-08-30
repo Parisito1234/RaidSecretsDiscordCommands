@@ -37,7 +37,7 @@
     {{ $curBalance := toInt (dbGet $.User.ID $key).Value }}
 
     {{if and (ge $curBalance $amount) (gt $amount 0)}}
-      {{ $embed := cembed "title" (joinStr "" "__" .User.Username "__ is at the roulette table") "description" (joinStr "" "They have bet `" (toString $amount) "` that the ball will land on `" $type "`.") "thumbnail" (sdict "url" $source)}}
+      {{ $embed := cembed "title" (joinStr "" "__" .User.Username "__ is at the roulette table") "description" (joinStr "" "They have bet `" (toString $amount) "` that the ball will land on `" $type "`. ") "thumbnail" (sdict "url" $source)}}
 
       {{$x := sendMessageRetID nil $embed }}
       {{sleep 4}}

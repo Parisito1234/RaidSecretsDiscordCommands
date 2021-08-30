@@ -61,7 +61,7 @@
 
 {{/*checks command is valid and sufficient balance*/}}
 {{if ne (len .Args) 2}}
-  {{sendMessage nil "Incorrect Syntax"}}
+  {{sendMessage nil "Syntax: `-blackjack <amount>`"}}
 {{else}}
   {{$bet := toInt (index .Args 1)}}
   {{if or (le $bet 0) (gt $bet 1000)}}

@@ -33,7 +33,7 @@
           {{$winState = 1}}
         {{end}}
       {{else}}
-        {{sendMessage nil "Heads or tails only"}}
+        {{sendMessage nil "Syntax: `-coinflip <heads|tails> <amount>`"}}
         {{$winState = 3}}                                 
       {{end}}
 
