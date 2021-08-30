@@ -1,4 +1,4 @@
-{{$perms := "ManageServer"}}
+{{ $perms := "ManageServer"}}
 {{ $key := "RSCoinBalance" }}
 {{ $coinIcon := "<:RSStonkCoin:869340420692394095>" }}
 {{ $args := parseArgs 1 "Syntax is `<action> <option 1> <option 2>`"

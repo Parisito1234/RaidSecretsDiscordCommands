@@ -11,13 +11,14 @@
     {{ $data := .Data }} {{ $index := .Index }}
     {{ $last := sub (len $data) 1 }}
     {{ if gt $index $last }}
-        {{ .Set "Res" 0 }}
+      {{ .Set "Res" 0 }}
     {{ else if eq $index $last }}
-        {{ .Set "Res" (slice $data 0 $last) }}
+      {{ .Set "Res" (slice $data 0 $last) }}
     {{ else if $index }}
-        {{ .Set "Res" ((slice $data 0 $index).AppendSlice (slice $data (add $index 1))) }}
+      {{ .Set "Res" ((slice $data 0 $index).AppendSlice (slice $data (add $index 1))) }}
     {{ else }}
-        {{ .Set "Res" (slice $data 1) }} {{ end }}
+      {{ .Set "Res" (slice $data 1) }} 
+    {{ end }}
 {{ end }}
 
 {{ define "check"}}
@@ -26,12 +27,14 @@
     {{range $index, $element := $list}}
       {{$number := (toInt (slice $element 1))}}
       {{if gt $number 10}}
-          {{$number = 10}}
+        {{$number = 10}}
       {{else if eq $number 1}}
-          {{$number = 11}}
+        {{$number = 11}}
       {{end}}
+
       {{$total = (add $total $number)}}
     {{end}}
+    
     {{.Set "Tot" $total}}
     {{.Set "Ace" true}}
 {{end}}
@@ -115,7 +118,7 @@
   "description" (joinStr "" "They have placed `" $bet "` " $e " on the table... \nSweeper deals the cards...")
   "fields" (cslice
     (sdict "name" $.User.Username "value" $player "inline" true)
-    (sdict "name" "**Sweeper**" "value" (joinStr "" (toString (index $prettydealerhand 0)) "  ??") "inline" true)
+    (sdict "name" "**Sweeper**" "value" (joinStr "" (toString (index $prettydealerhand 0)) "  ?") "inline" true)
   )}}
 {{$x := sendMessageRetID nil $embed}}
 {{dbSet $.User.ID $blackjackKey (sdict "PlayerHand" $playerhand "DealerHand" $dealerhand "Ace" $ace "PlayerTotal" $playertotal "Deck" $deck)}}
@@ -130,8 +133,8 @@
   "description" (joinStr "" "They have placed `" $bet "` " $e " on the table... \nSweeper deals the cards...")
   "fields" (cslice
     (sdict "name" $.User.Username "value" $player "inline" true)
-    (sdict "name" "**Sweeper**" "value" (joinStr "" (toString (index $dealerhand 0)) "  ??") "inline" true)
-    (sdict "name" "__**Nice!**__" "value" (joinStr "" "***BLACKJACK!!! You have won `" (mult $bet 2) "` !!!***") "inline" false)
+    (sdict "name" "**Sweeper**" "value" (joinStr "" (toString (index $dealerhand 0)) "  ?") "inline" true)
+    (sdict "name" "__**Nice!**__" "value" (joinStr "" "***BLACKJACK! You have won `" (mult $bet 2) "` !***") "inline" false)
   )}}
 {{sendMessage nil $embed}}
 {{dbSet $.User.ID $key (add $newbalance (mult $bet 2))}}
