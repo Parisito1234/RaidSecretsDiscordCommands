@@ -66,10 +66,32 @@
 		{{ dbSet 204255221017214977 $key 0 }}
 		{{ sendMessage nil (joinStr "" "Current Lottery Pool balance is `0` " $coinIcon ) }}
 	{{ else if or (eq $action "top") (eq $action "list") }}
-		{{ $dbtop := dbTopEntries $key 5 0 }}
+		{{ $userList := cslice }}
+		{{ $dbtop := dbTopEntries $key 20 0 }}
 		{{ range $dbtop }}
-			`{{(userArg .UserID).String}}` - `{{.Key}}` : `{{.Value}}`
+			{{ $currentMember := (getMember .UserID) }}
+			{{ $roles := ($.Guild.GetMemberPermissions $.Channel.ID $currentMember.User.ID $currentMember.Roles) }}
+			{{ if and (ge $roles 0) (lt $roles 2140775575) }}
+				{{ $userList = $userList.Append $currentMember.User.ID }}
+			{{ end }}
 		{{ end }}
+		{{ $displayList := cslice "" "" "" "" "" }}
+		{{ range $i, $element := (seq 0 5) }}
+			{{ $displayList.Set $i (index $userList $i) }}
+		{{ end }}
+
+		{{$embed := cembed 
+			"title" (joinStr "" "__" $coinIcon " Leaderboards__")
+			"color" 1772743
+			"description" (joinStr "" "**1:** `" (userArg (index $displayList 0)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 0) $key).Value) "`"
+			"\n**2:** `" (userArg (index $displayList 1)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 1) $key).Value) "`"
+			"\n**3:** `" (userArg (index $displayList 2)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 2) $key).Value) "`"
+			"\n**4:** `" (userArg (index $displayList 3)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 3) $key).Value) "`"
+			"\n**5:** `" (userArg (index $displayList 4)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 4) $key).Value) "`" )
+			"footer" (sdict "text" (joinStr "" "Current Lottery Balance: " $lotteryPool ))
+		}}
+		{{ sendMessage nil $embed }}
+		{{ deleteTrigger 0 }}
 	{{ end }}
 
 
@@ -80,10 +102,32 @@
 	{{ if or (eq $action "balance") (eq $action "bal") }}
 		{{ sendMessage nil (joinStr "" "`" $.User "` has " $curBalance " " $coinIcon )}}
 	{{ else if or (eq $action "top") (eq $action "list") }}
-		{{ $dbtop := dbTopEntries $key 5 0 }}
+		{{ $userList := cslice }}
+		{{ $dbtop := dbTopEntries $key 20 0 }}
 		{{ range $dbtop }}
-			`{{(userArg .UserID).String}}` - `{{.Key}}` : `{{printf "%v" .Value}}`
+			{{ $currentMember := (getMember .UserID) }}
+			{{ $roles := ($.Guild.GetMemberPermissions $.Channel.ID $currentMember.User.ID $currentMember.Roles) }}
+			{{ if and (ge $roles 0) (lt $roles 2140775575) }}
+				{{ $userList = $userList.Append $currentMember.User.ID }}
+			{{ end }}
 		{{ end }}
+		{{ $displayList := cslice "" "" "" "" "" }}
+		{{ range $i, $element := (seq 0 5) }}
+			{{ $displayList.Set $i (index $userList $i) }}
+		{{ end }}
+
+		{{$embed := cembed 
+			"title" (joinStr "" "__" $coinIcon " Leaderboards__")
+			"color" 1772743
+			"description" (joinStr "" "**1:** `" (userArg (index $displayList 0)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 0) $key).Value) "`"
+			"\n**2:** `" (userArg (index $displayList 1)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 1) $key).Value) "`"
+			"\n**3:** `" (userArg (index $displayList 2)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 2) $key).Value) "`"
+			"\n**4:** `" (userArg (index $displayList 3)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 3) $key).Value) "`"
+			"\n**5:** `" (userArg (index $displayList 4)).String "` : " $coinIcon " `" (toInt (dbGet (index $displayList 4) $key).Value) "`" )
+			"footer" (sdict "text" (joinStr "" "Current Lottery Balance: " $lotteryPool ))
+		}}
+		{{ sendMessage nil $embed }}
+		{{ deleteTrigger 0 }}
 	{{ else if or (eq $action "give") (eq $action "pay")}}
 		{{ if not ($args.Get 2) }}
 			{{ sendMessage nil "Missing or incorrect format for amount. `-rscoin give|pay @user amount`" }}
