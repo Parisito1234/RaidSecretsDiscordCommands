@@ -48,8 +48,8 @@
         {{dbSet $.User.ID $key (toString (add $curBalance $amount))}}
       {{else if eq $winState 2}}
         {{if eq $amount 1}}
-        {{dbSet $.User.ID $key (sub $curBalance 1)}}
-        {{dbSet 204255221017214977 $key (add $lotteryPool 1)}}
+          {{dbSet $.User.ID $key (sub $curBalance 1)}}
+          {{dbSet 204255221017214977 $key (add $lotteryPool 1)}}
         {{ else }}
           {{dbSet $.User.ID $key (sub $curBalance (toInt (roundFloor (div (toFloat $amount) 2.0) 1)))}}
           {{sendMessage nil (joinStr "" "Nope! It was " $rollType "! The house took half of your bet!")}}
