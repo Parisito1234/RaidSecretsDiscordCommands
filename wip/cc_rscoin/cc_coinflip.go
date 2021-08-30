@@ -47,9 +47,15 @@
         {{sendMessage nil (joinStr "" "The coin landed on " $rollType " and " .User.Username " has won `" $amount "`!!!\n" $.User.Username " now has `" (add $curBalance $amount) "` " $e)}}
         {{dbSet $.User.ID $key (toString (add $curBalance $amount))}}
       {{else if eq $winState 2}}
-        {{dbSet $.User.ID $key (sub $curBalance (toInt (roundFloor (div (toFloat $amount) 2.0) 1)))}}
-        {{sendMessage nil (joinStr "" "Nope! It was " $rollType "! The house took half of your bet!")}}
-        {{dbSet 204255221017214977 $key (add $lotteryPool (toInt (roundCeil (div (toFloat $amount) 2.0) 1)))}}
+        {{if eq $amount 1}}
+        {{dbSet $.User.ID $key (sub $curBalance 1)}}
+        {{dbSet 204255221017214977 $key (add $lotteryPool 1)}}
+        {{ else }}
+          {{dbSet $.User.ID $key (sub $curBalance (toInt (roundFloor (div (toFloat $amount) 2.0) 1)))}}
+          {{sendMessage nil (joinStr "" "Nope! It was " $rollType "! The house took half of your bet!")}}
+          {{dbSet 204255221017214977 $key (add $lotteryPool (toInt (roundCeil (div (toFloat $amount) 2.0) 1)))}}
+        {{ end }}
+        
         {{/*$a := execAdmin "mute" $.User (joinStr "" $amount "m") "coinflips"*/}}
       {{end}}
 
