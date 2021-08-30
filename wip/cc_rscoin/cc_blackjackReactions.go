@@ -109,7 +109,7 @@
 			{{else if gt $playertotal 21}}
 				{{$embed := cembed
 				"title" (joinStr "" "__" $.User.Username "__ is at the blackjack table.")
-				"description" "Sweeper deals the cards..."
+				"description" "The game is over."
 				"fields" (cslice
 				(sdict "name" "Bet" "value" (joinStr "" $e " `" $bet "`")  "inline" true )
 				(sdict "name" $.User.Username "value" $player "inline" true)
