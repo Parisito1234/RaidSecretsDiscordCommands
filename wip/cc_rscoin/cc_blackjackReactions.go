@@ -208,8 +208,10 @@
 			{{$endMsg := (sdict "temp" "temp")}}
 			{{if eq $state 1}}
 				{{$endMsg = (sdict "name" "**WIN!!**" "value" (joinStr "" "`" $bet "` " $e " has been added to your balance!") "inline" false) }}
+				{{dbSet $.User.ID $key (add $balance $bet)}}
 			{{else if eq $state 2}}
 				{{$endMsg = (sdict "name" "**LOST!!**" "value" "Sweeper sweeps the money on the table into his pockets..." "inline" false) }}
+				{{dbSet $.User.ID $key (sub $balance $bet)}}
 			{{else if eq $state 3}}
 				{{$endMsg = (sdict "name" "**DRAW!!**" "value" "You pick the money up from the table, and add it back to your pocket..." "inline" false)}}
 			{{end}}
@@ -224,7 +226,6 @@
 				$endMsg)
 			}}
 			{{editMessage nil $x $embed}}
-			{{dbSet $.User.ID $key (add $balance $bet)}}
 
 			{{$silent := dbDel $.User.ID $blackjackKey}}
 
