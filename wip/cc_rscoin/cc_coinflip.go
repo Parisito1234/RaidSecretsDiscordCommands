@@ -11,6 +11,8 @@
 
 {{ if eq $cooldown 1}}
   {{ sendMessage nil (joinStr "" .User.Username ", you're on cooldown for flipping coins! Try again in a minute.") }}
+  {{ deleteTrigger 10 }}
+  {{ deleteResponse 10 }}
 {{ else }}
   {{dbSetExpire $.User.ID $coinflipkey 1 60}}
   {{if eq (len .Args) 3}}
