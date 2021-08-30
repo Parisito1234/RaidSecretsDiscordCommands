@@ -27,7 +27,7 @@
 	{{ if or (eq $action "balance") (eq $action "bal") }}
 		{{/* Balance, with perms! */}}
 		{{ $curBalance := toInt (dbGet $targetUser.ID $key).Value }}
-		{{ sendMessage nil (joinStr "" "`" $targetUser.Username "` has " $curBalance " " $coinIcon )}}
+		{{ sendMessage nil (joinStr "" "`" $targetUser.Username "` has `" $curBalance "` " $coinIcon )}}
 	{{ else if or (eq $action "add") (eq $action "give") }} 
 		{{ if not ($args.Get 2) }}
 			{{ sendMessage nil "Missing or incorrect format for amount. `-rscoin add|give @user amount`" }}

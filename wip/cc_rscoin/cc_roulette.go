@@ -67,7 +67,7 @@
         {{$win = $amount}}
         {{$status = "lost"}}
         {{if not (in (split (index (split (exec "viewperms") "\n") 2) ", ") $perms)}}
-	        {{dbSet 204255221017214977 $key (add $lotteryPool (roundCeil (div $amount 10))) }}
+	        {{dbSet 204255221017214977 $key (add $lotteryPool $amount) }}
         {{end}}
       {{end}}
 
@@ -97,7 +97,7 @@
       {{if eq $status "lost"}}
         {{$embed2 = cembed
           "title" (joinStr "" .User.Username " has " $status " `" $win "` " $e " at the roulette table")
-          "description" (joinStr "" ":x: The ball landed on " $roll ".\n\n" .User.Username " now has " (toInt (dbGet $.User.ID $key).Value) $e " \n *10% of their loss has gone to the lottery pool.*")
+          "description" (joinStr "" ":x: The ball landed on " $roll ".\n\n" .User.Username " now has " (toInt (dbGet $.User.ID $key).Value) $e " \n *Their loss has gone to the lottery pool.*")
           "thumbnail" $img }}
       {{end}}
 

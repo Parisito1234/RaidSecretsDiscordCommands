@@ -2,6 +2,7 @@
 {{$blackjackKey := "RSCasinoBlackJack"}}
 {{$e := "<:RSStonkCoin:869340420692394095>"}}
 {{$initialData := (dbGet $.User.ID $blackjackKey).Value}}
+{{ $lotteryPool := toInt ((dbGet 204255221017214977 $key).Value) }}
 
 {{ $silent := ""}}
 
@@ -115,7 +116,8 @@
 				(sdict "name" "Sweeper" "value" (joinStr "" (toString (index $prettydealerhand 0)) "  ??") "inline" true)
 				(sdict "name" "__**BUST!**__" "value" (joinStr "" "You've gone bust and lost all `" $bet "` " $e " on the table...") "inline" false)
 				)}}
-				{{editMessage nil $x $embed}}
+				{{$silent = editMessage nil $x $embed}}
+				{{ dbSet 204255221017214977 $key (add $lotteryPool $bet) }}
 				{{dbDel $.User.ID $blackjackKey}}
 				{{deleteAllMessageReactions nil $x}}
 			{{end}}
@@ -205,6 +207,7 @@
 				{{$endMsg = (sdict "name" "**WIN!!**" "value" (joinStr "" "`" $bet "` " $e " has been added to your balance!\n`" $.User.Username "` now has " $e " `" (dbGet $.User.ID $key).Value "`") "inline" false) }}
 			{{else if eq $state 2}}
 				{{$endMsg = (sdict "name" "**LOST!!**" "value" (joinStr "" "Sweeper sweeps the money on the table into his pockets...\n`" $.User.Username "` now has " $e " `" (dbGet $.User.ID $key).Value "`" ) "inline" false) }}
+				{{ dbSet 204255221017214977 $key (add $lotteryPool $bet) }}
 			{{else if eq $state 3}}
 				{{dbSet $.User.ID $key (add $balance $bet)}}
 				{{$endMsg = (sdict "name" "**DRAW!!**" "value" (joinStr "" "You pick the money up from the table, and add it back to your pocket...\n`" $.User.Username "` now has " $e " `" (dbGet $.User.ID $key).Value "`") "inline" false)}}
