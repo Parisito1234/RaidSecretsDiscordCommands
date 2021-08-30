@@ -23,7 +23,7 @@
         {{$winState = 1}}
       {{end}}
     {{else}}
-      {{sendMessage nil "Its literally only heads or tails bruh"}}
+      {{sendMessage nil "Heads or tails only"}}
       {{$winState = 3}}                                 
     {{end}}
 
