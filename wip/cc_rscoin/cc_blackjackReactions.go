@@ -226,7 +226,7 @@
 			{{editMessage nil $x $embed}}
 			{{dbSet $.User.ID $key (add $balance $bet)}}
 
-			{{dbDel $.User.ID $blackjackKey}}
+			{{$silent := dbDel $.User.ID $blackjackKey}}
 
 		{{end}}
 	{{end}}
