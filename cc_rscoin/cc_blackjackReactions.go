@@ -1,9 +1,9 @@
 {{$key := "RSCoinBalance" }}
-{{$blackjackKey := "RSCasinoBlackJack"}}
+{{$gameKey := "RSCasinoBlackJack"}}
 {{$e := "<:RSStonkCoin:869340420692394095>"}}
-{{$initialData := (dbGet $.User.ID $blackjackKey).Value}}
-{{ $lotteryPool := toInt ((dbGet 204255221017214977 $key).Value) }}
-
+{{$initialData := (dbGet $.User.ID $gameKey).Value}}
+{{ $sid := 204255221017214977}}
+{{ $lotteryPool := toInt ((dbGet $sid $key).Value) }}
 {{ $silent := ""}}
 
 {{ define "remove" }}
@@ -105,7 +105,7 @@
 				)}}
 				{{editMessage nil $x $embed}}
 				{{$temp := (sdict "PlayerHand" $playerhand2 "DealerHand" $dealerhand2 "Ace" $ace "PlayerTotal" $playertotal "Deck" $deck "X" $x "Bet" $bet)}}
-				{{dbSetExpire $.User.ID $blackjackKey $temp 120}}
+				{{dbSetExpire $.User.ID $gameKey $temp 120}}
 			{{else if gt $playertotal 21}}
 				{{$embed := cembed
 				"title" (joinStr "" "__" $.User.Username "__ is at the blackjack table.")
@@ -117,8 +117,10 @@
 				(sdict "name" "__**BUST!**__" "value" (joinStr "" "You've gone bust and lost all `" $bet "` " $e " on the table...") "inline" false)
 				)}}
 				{{$silent = editMessage nil $x $embed}}
-				{{ dbSet 204255221017214977 $key (add $lotteryPool $bet) }}
-				{{dbDel $.User.ID $blackjackKey}}
+				{{if not (in (split (index (split (exec "viewperms") "\n") 2) ", ") "ManageServer")}}
+					{{ dbSet $sid $key (add $lotteryPool $bet) }}
+				{{ end }}
+				{{dbDel $.User.ID $gameKey}}
 				{{deleteAllMessageReactions nil $x}}
 			{{end}}
 
@@ -204,10 +206,12 @@
 			{{$endMsg := (sdict "temp" "temp")}}
 			{{if eq $state 1}}
 				{{dbSet $.User.ID $key (add $balance (mult $bet 2))}}
-				{{$endMsg = (sdict "name" "**WIN!!**" "value" (joinStr "" "`" $bet "` " $e " has been added to your balance!\n`" $.User.Username "` now has " $e " `" (dbGet $.User.ID $key).Value "`") "inline" false) }}
+				{{$endMsg = (sdict "name" "WIN!" "value" (joinStr "" "`" $bet "` " $e " has been added to your balance!\n`" $.User.Username "` now has " $e " `" (dbGet $.User.ID $key).Value "`") "inline" false) }}
 			{{else if eq $state 2}}
-				{{$endMsg = (sdict "name" "**LOST!!**" "value" (joinStr "" "Sweeper sweeps the money on the table into his pockets...\n`" $.User.Username "` now has " $e " `" (dbGet $.User.ID $key).Value "`" ) "inline" false) }}
-				{{ dbSet 204255221017214977 $key (add $lotteryPool $bet) }}
+				{{$endMsg = (sdict "name" "LOST!" "value" (joinStr "" "Sweeper sweeps the money on the table into his pockets...\n`" $.User.Username "` now has " $e " `" (dbGet $.User.ID $key).Value "`" ) "inline" false) }}
+				{{if not (in (split (index (split (exec "viewperms") "\n") 2) ", ") "ManageServer")}}
+					{{ dbSet $sid $key (add $lotteryPool $bet) }}
+				{{ end }}
 			{{else if eq $state 3}}
 				{{dbSet $.User.ID $key (add $balance $bet)}}
 				{{$endMsg = (sdict "name" "**DRAW!!**" "value" (joinStr "" "You pick the money up from the table, and add it back to your pocket...\n`" $.User.Username "` now has " $e " `" (dbGet $.User.ID $key).Value "`") "inline" false)}}
@@ -224,7 +228,7 @@
 			}}
 			{{$silent = editMessage nil $x $embed}}
 
-			{{$silent = dbDel $.User.ID $blackjackKey}}
+			{{$silent = dbDel $.User.ID $gameKey}}
 
 		{{end}}
 	{{end}}
