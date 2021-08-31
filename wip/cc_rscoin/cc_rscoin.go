@@ -130,22 +130,26 @@
 		{{ deleteTrigger 0 }}
 	{{ else if or (eq $action "give") (eq $action "pay")}}
 		{{ if not ($args.Get 2) }}
-			{{ sendMessage nil "Missing or incorrect format for amount. `-rscoin give|pay @user amount`" }}
+			{{ sendMessage nil "Missing or incorrect format for amount. `-rscoin <give|pay> @user amount`" }}
 		{{ else }}
-			{{/*Take calling user's balance (user) and move $value to $targetUser's balance*/}}
-			
-			{{ $targetUser = (userArg ($args.Get 1) ) }}
-			{{ $targetBalance := toInt (dbGet $targetUser.ID $key).Value }}
-			{{ $callingUser := $.User }}
-			{{ $callingBalance := toInt (dbGet $callingUser.ID $key).Value }}
-			{{ $value := toInt ($args.Get 2) }}
-			{{ if gt $value $curBalance}}
-				{{ $value = $curBalance}}
+			{{ $amount := toInt ($args.Get 2) }}
+			{{ if gt $amount $curBalance}}
+				{{ $amount = $curBalance}}
 			{{ end }}
-			{{ if lt $value 0 }} {{ $value = mult $value -1 }} {{ end }}
-			{{ dbSet $targetUser.ID $key (add $targetBalance $value) }}
-			{{ dbSet $callingUser.ID $key (sub $callingBalance $value) }}
-			{{ sendMessage nil (joinStr "" "`" $callingUser.Username "` paid `" $targetUser.Username "` `" $value "`" $coinIcon) }}
+			{{ if lt $amount 0 }} {{ $amount = mult $amount -1 }} {{ end }}
+
+			{{ $givingUser := $.User }}
+			{{ $givingBalance := (toInt (dbGet $givingUser.ID $key).Value) }}
+			{{ $newGivingBalance := (sub $givingBalance $amount)}}
+			{{ dbSet $givingUser.ID $key $newGivingBalance }}
+
+			{{ $targetUser = (userArg ($args.Get 1) ) }}
+			{{ $targetBalance := (toInt (dbGet $targetUser.ID $key).Value) }}
+			{{ $newTargetBalance := (add $targetBalance $amount)}}
+			{{ dbSet $targetUser.ID $key $newTargetBalance }}
+
+			{{ sendMessage nil (joinStr "" "`" $givingUser.Username "` paid `" $targetUser.Username "` `" $amount "`" $coinIcon) }}
+			{{ sendMessage nil (joinStr "" $targetUser.Username " " $targetBalance " " (dbGet $targetUser.ID $key).Value " " $givingUser.Username " " $givingBalance " " (dbGet $givingUser.ID $key).Value " " $amount )}}
 
 		{{ end }}
 	{{ else if eq $action "claim" }}
