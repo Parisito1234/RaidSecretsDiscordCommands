@@ -100,7 +100,7 @@
 
 	{{ $curBalance := toInt (dbGet $.User.ID $key).Value }}
 	{{ if or (eq $action "balance") (eq $action "bal") }}
-		{{ sendMessage nil (joinStr "" "`" $.User.Username "` has " $curBalance " " $coinIcon )}}
+		{{ sendMessage nil (joinStr "" "`" $.User.Username "` has `" $curBalance "` " $coinIcon )}}
 	{{ else if or (eq $action "top") (eq $action "list") }}
 		{{ $userList := cslice }}
 		{{ $dbtop := dbTopEntries $key 20 0 }}
