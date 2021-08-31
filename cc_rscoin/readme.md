@@ -1,8 +1,8 @@
 ## Coming Soon™
 
 Gamifying RaidSecrets, one command at a time.
- [ ] Gambling
- [ ] Give/Take mod commands
+ [X] Gambling
+ [X] Give/Take mod commands
  [ ] Bounty rewards
  [ ] Competitive Bracket prize pool payout
 
