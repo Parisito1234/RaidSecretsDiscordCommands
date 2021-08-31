@@ -149,7 +149,6 @@
 			{{ dbSet $targetUser.ID $key $newTargetBalance }}
 
 			{{ sendMessage nil (joinStr "" "`" $givingUser.Username "` paid `" $targetUser.Username "` `" $amount "`" $coinIcon) }}
-			{{ sendMessage nil (joinStr "" $targetUser.Username " " $targetBalance " " (dbGet $targetUser.ID $key).Value " " $givingUser.Username " " $givingBalance " " (dbGet $givingUser.ID $key).Value " " $amount )}}
 
 		{{ end }}
 	{{ else if eq $action "claim" }}
