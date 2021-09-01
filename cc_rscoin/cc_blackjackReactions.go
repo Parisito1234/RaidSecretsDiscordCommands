@@ -62,7 +62,7 @@
 {{if eq (printf "%T" $initialData) "*templates.SDict"}}
 	{{$deck := $initialData.Get "Deck"}}
 	{{$dealerhand := $initialData.Get "DealerHand"}}
-	{{$playerhand := $initialData.Get "PlayerHand"}}
+	{{$phand := $initialData.Get "PlayerHand"}}
 	{{$playertotal := $initialData.Get "PlayerTotal"}}
 	{{$x := $initialData.Get "X"}}
 	{{$ace := $initialData.Get "Ace"}}
@@ -76,13 +76,13 @@
 			{{$card1 := (index $deck $roll1)}}
 			{{ $data := sdict "Data" $deck "Index" $roll1 }}
 			{{ template "remove" $data }} {{ $deck = $data.Res }}
-			{{$playerhand2 := ($playerhand.Append $card1)}}
-			{{$playerhand = ($playerhand.Append $card1)}}
+			{{$phand2 := ($phand.Append $card1)}}
+			{{$phand = ($phand.Append $card1)}}
 
-			{{ $data := sdict "List" $playerhand}}
+			{{ $data := sdict "List" $phand}}
 			{{template "check" $data}}{{$playertotal := $data.Tot}}{{$ace := $data.Ace}}
 
-			{{ $data := sdict "List" $playerhand}}
+			{{ $data := sdict "List" $phand}}
 			{{ template "convert" $data }} {{ $prettyplayerhand := $data.Ret }}
 
 			{{$dealerhand2 := slice ($dealerhand.Append "") 0 2}}
@@ -104,7 +104,7 @@
 				(sdict "name" "Sweeper" "value" (joinStr "" (toString (index $prettydealerhand 0)) "  ??") "inline" true)
 				)}}
 				{{editMessage nil $x $embed}}
-				{{$temp := (sdict "PlayerHand" $playerhand2 "DealerHand" $dealerhand2 "Ace" $ace "PlayerTotal" $playertotal "Deck" $deck "X" $x "Bet" $bet)}}
+				{{$temp := (sdict "PlayerHand" $phand2 "DealerHand" $dealerhand2 "Ace" $ace "PlayerTotal" $playertotal "Deck" $deck "X" $x "Bet" $bet)}}
 				{{dbSetExpire $.User.ID $gameKey $temp 120}}
 			{{else if gt $playertotal 21}}
 				{{$embed := cembed
@@ -114,7 +114,7 @@
 				(sdict "name" "Bet" "value" (joinStr "" $e " `" $bet "`")  "inline" true )
 				(sdict "name" $.User.Username "value" $player "inline" true)
 				(sdict "name" "Sweeper" "value" (joinStr "" (toString (index $prettydealerhand 0)) "  ??") "inline" true)
-				(sdict "name" "__**BUST!**__" "value" (joinStr "" "You've gone bust and lost all `" $bet "` " $e " on the table...") "inline" false)
+				(sdict "name" "BUST!" "value" (joinStr "" "You've gone bust and lost all `" $e $bet "` " " on the table...") "inline" false)
 				)}}
 				{{$silent = editMessage nil $x $embed}}
 				{{if not (in (split (index (split (exec "viewperms") "\n") 2) ", ") "ManageServer")}}
@@ -128,7 +128,7 @@
 			{{deleteMessageReaction nil $x $.User.ID ":stand:881273109670412368"}}
 			{{deleteAllMessageReactions nil $x}}
 
-			{{ $data := sdict "List" $playerhand}}
+			{{ $data := sdict "List" $phand}}
 			{{template "check" $data}}{{$playertotal := $data.Tot}}{{$ace := $data.Ace}}
 			{{ $data := sdict "List" $dealerhand}}
 			{{template "check" $data}}{{$dealertotal := $data.Tot}}{{$dealerace := $data.Ace}}
@@ -164,7 +164,7 @@
 				{{$state = 3}}
 			{{end}}
 
-			{{ $data := sdict "List" $playerhand}}
+			{{ $data := sdict "List" $phand}}
 			{{ template "convert" $data }} {{ $prettyplayerhand := $data.Ret }}
 			{{ $data := sdict "List" $dealerhand}}
 			{{ template "convert" $data }} {{ $prettydealerhand := $data.Ret }}

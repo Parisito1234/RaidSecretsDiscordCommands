@@ -25,7 +25,7 @@
 {{/*}}
 {{ else if eq $user1.ID $user2.ID }}
 	{{ sendMessage nil (joinStr "" $user1.Username ", you can't start a duel with yourself.")}}
-	*/}}
+*/}}
 {{ else if and (gt $amount 0) (gt $amount $curBalance ) }}
 	{{ sendMessage nil "You don't have enough, or bet an invalid number!"}}
 {{ else }}
@@ -48,7 +48,7 @@
 	
 	{{ dbSetExpire $user1.ID $gameKey (sdict "active" 1 "messageID" $x) 15 }}
 	{{ dbSetExpire $user2.ID $gameKey (sdict "active" 1 "messageID" $x) 15 }}
-	{{ dbSetExpire $x $gameKey (sdict "state" "pending" "user1" $user1.ID "user2" $user2.ID "bet" $amount) 60 }}
+	{{ dbSetExpire $x $gameKey (sdict "state" 0 "user1" $user1.ID "user2" $user2.ID "bet" $amount) 60 }}
 
 	{{ addMessageReactions nil $x ":white_check_mark:" ":x:" }}
 {{ end }}
