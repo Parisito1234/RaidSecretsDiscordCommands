@@ -52,10 +52,6 @@
 				{{ dbDel $x $gameState }}
 				{{ editMessage nil $x (complexMessageEdit "content" " " "embed" $embed) }}
 			{{ end }}
-			
-		{{ else if eq $user.ID $user1.ID }}
-			{{ deleteMessageReaction nil $x .Reaction.UserID $r }}
-			{{ sendMessage nil "Wait for your opponent to start the match!"}}
 		{{ end }}
 
 	{{ else if ge $state 1 }}
