@@ -47,11 +47,6 @@
 	}}
 
 	{{ $x := sendMessageRetID nil (complexMessage "content" $user2.Mention "embed" $embed) }}
-	
-	{{ $user1balance := (dbGet $user1.ID $balanceKey).Value }}
-	{{ $user2balance := (dbGet $user2.ID $balanceKey).Value }}
-	{{ dbSet $user1.ID $balanceKey (sub $user1balance $amount )}}
-	{{ dbSet $user2.ID $balanceKey (sub $user2balance $amount )}}
 
 	{{ dbSetExpire $user1.ID $gameKey (sdict "active" 1 "messageID" $x) 60 }}
 	{{ dbSetExpire $user2.ID $gameKey (sdict "active" 1 "messageID" $x) 60 }}

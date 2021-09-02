@@ -12,6 +12,9 @@
 {{ $user2 := userArg ($gameState.Get "user2")}}
 {{ $amount := $gameState.Get "bet" }}
 
+{{ $user1balance := toInt (dbGet $user1.ID $balanceKey).Value }}
+{{ $user2balance := toInt (dbGet $user2.ID $balanceKey).Value }}
+
 
 {{if eq (printf "%T" $gameState) "*templates.SDict"}}
 	{{ if eq 0 $state }}
@@ -186,32 +189,30 @@
 				{{if not (eq (printf "%T" $user1History) "*templates.SDict")}} {{ $user1History = (sdict "wins" 0 "losses" 0 )}} {{ end }}
 				{{if not (eq (printf "%T" $user2History) "*templates.SDict")}} {{ $user2History = (sdict "wins" 0 "losses" 0 )}} {{ end }}
 
-				{{ $user1balance := (dbGet $user1.ID $balanceKey).Value }}
-				{{ $user2balance := (dbGet $user2.ID $balanceKey).Value }}
-
 				{{ if and (le $health1 0) (le $health2 0)}}
 					{{ $winFields = $winFields.Append (sdict "name" "Game Over!" "value" "It was a draw!"  "inline" true )}}
 					{{ $user1balance = (add $user1balance $amount )}}
 					{{ $user2balance = (add $user1balance $amount )}}
-					{{ dbSet $user1.ID $balanceKey $user1balance }}
-					{{ dbSet $user2.ID $balanceKey $user2balance }}
 				{{ else if gt $health1 $health2}}
 					{{/*User 1 wins*/}}
 					{{ $winFields = $winFields.Append (sdict "name" "Game Over!" "value" (joinStr "" $user1.Username " won!")  "inline" true )}}
-					{{ $user1balance = (add $user1balance (mult $amount 2))}}
-					{{ dbSet $user1.ID $balanceKey $user1balance }}
+					{{ $user1balance = (add $user1balance $amount )}}
+					{{ $user2balance = (sub $user2balance $amount )}}
 					
 					{{ $user1History.Set "wins" (add (toInt ($user1History.Get "wins")) 1)}}
 					{{ $user2History.Set "losses" (add (toInt ($user2History.Get "losses")) 1)}}
 				{{ else }}
 					{{/*User 2 wins*/}}
 					{{ $winFields = $winFields.Append (sdict "name" "Game Over!" "value" (joinStr "" $user2.Username " won!")  "inline" true )}}
-					{{ $user2balance = (add $user2balance (mult $amount 2))}}
-					{{ dbSet $user2.ID $balanceKey $user2balance }}
+					{{ $user1balance = (sub $user1balance $amount )}}
+					{{ $user2balance = (add $user2balance $amount )}}
 
 					{{ $user1History.Set "losses" (add (toInt ($user1History.Get "losses")) 1)}}
 					{{ $user2History.Set "wins" (add (toInt ($user2History.Get "wins")) 1)}}
 				{{ end }}
+
+				{{ dbSet $user1.ID $balanceKey $user1balance }}
+				{{ dbSet $user2.ID $balanceKey $user2balance }}
 				
 				{{ dbSet $user1.ID $historyKey $user1History}}
 				{{ dbSet $user2.ID $historyKey $user2History}}
@@ -226,6 +227,8 @@
 				{{ $silent := dbDel $user1.ID $gameKey }}
 				{{ $silent = dbDel $user2.ID $gameKey }}
 				{{ $silent = dbDel $x $gameKey }}
+
+				
 			{{ end }}
 		{{ end }}
 	{{ end }}
