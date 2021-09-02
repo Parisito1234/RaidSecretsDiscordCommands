@@ -92,20 +92,25 @@
 				{{/*Game is at calculation state*/}}
 				{{ $dmg1 := ($gameState.Get "dmg1")}}
 				{{ $dmg2 := ($gameState.Get "dmg2")}}
+				{{ $parry := (add $dmg2 $dmg1) }}
 
 				{{$appendStr1 := "*Blocked!*"}}
 				{{$appendStr2 := "*Blocked!*"}}
+				
 
 				{{ if gt $dmg1 0 }}
 					{{/*User is attacking*/}}
 					{{ $appendStr1 = (joinStr "" "Attacks for `" $dmg1 "`") }}
 					{{ if lt $dmg2 0 }}
 						{{/*Target is blocking*/}}
-						{{ $parry := (add $dmg1 $dmg2) }}
 						{{ if le $parry 0 }}
 							{{/*success*/}}	
 							{{ $health1 = add $health1 $parry }}
 							{{ $appendStr2 = (joinStr "" "Parried for `" (mult $parry -1) "`")}}
+							{{ $appendStr1 = "Got parried!"}}
+						{{ else }}
+							{{ $appendStr2 = "Failed to block!"}}
+							{{ $health2 = sub $health2 $dmg1 }}
 						{{ end }}
 					{{ else }}
 						{{ $health2 = sub $health2 $dmg1 }}
@@ -117,11 +122,14 @@
 					{{ $appendStr2 = (joinStr "" "Attacks for `" $dmg2 "`") }}
 					{{ if lt $dmg1 0 }}
 						{{/*Target is blocking*/}}
-						{{ $parry := (add $dmg2 $dmg1) }}
 						{{ if le $parry 0 }}
 							{{/*success*/}}	
 							{{ $health2 = add $health2 $parry }}
 							{{ $appendStr1 = (joinStr "" "Parried for `" (mult $parry -1) "`")}}
+							{{ $appendStr2 = "Got parried!"}}
+						{{ else }}
+							{{ $appendStr1 = "Failed to block!"}}
+							{{ $health1 = sub $health1 $dmg2 }}
 						{{ end }}
 					{{ else }}
 						{{ $health1 = sub $health1 $dmg2 }}
@@ -184,16 +192,14 @@
 				{{ else if gt $health1 $health2}}
 					{{/*User 1 wins*/}}
 					{{ $winFields = $winFields.Append (sdict "name" "Game Over!" "value" (joinStr "" $user1.Username " won!")  "inline" true )}}
-					{{ dbSet $user1.ID $balanceKey (add $user1balance $amount )}}
-					{{ dbSet $user2.ID $balanceKey (sub $user2balance $amount )}}
+					{{ dbSet $user1.ID $balanceKey (add $user1balance (mult $amount 2))}}
 					
 					{{ $user1History.Set "wins" (add (toInt ($user1History.Get "wins")) 1)}}
 					{{ $user2History.Set "losses" (add (toInt ($user2History.Get "losses")) 1)}}
 				{{ else }}
 					{{/*User 2 wins*/}}
 					{{ $winFields = $winFields.Append (sdict "name" "Game Over!" "value" (joinStr "" $user2.Username " won!")  "inline" true )}}
-					{{ dbSet $user2.ID $balanceKey (add $user2balance $amount )}}
-					{{ dbSet $user1.ID $balanceKey (sub $user1balance $amount )}}
+					{{ dbSet $user2.ID $balanceKey (add $user2balance (mult $amount 2))}}
 
 					{{ $user1History.Set "losses" (add (toInt ($user1History.Get "losses")) 1)}}
 					{{ $user2History.Set "wins" (add (toInt ($user2History.Get "wins")) 1)}}

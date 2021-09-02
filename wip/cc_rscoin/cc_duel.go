@@ -22,8 +22,9 @@
 
 {{ if or (eq (toInt ($gameState1.Get "active")) 1 ) (eq (toInt ($gameState2.Get "active")) 1 ) }}
 	{{ sendMessage nil "One of the players still has an active duel!" }}
-{{ else if eq $user1.ID $user2.ID }}
+{{/*{{ else if eq $user1.ID $user2.ID }}
 	{{ sendMessage nil (joinStr "" $user1.Username ", you can't start a duel with yourself.")}}
+*/}}
 {{ else if le $amount 0 }}
 	{{ sendMessage nil (joinStr "" $user1.Username ", your bet needs to be a positive number!")}}
 {{ else if gt $amount $curBalance }}
@@ -48,6 +49,11 @@
 
 	{{ $x := sendMessageRetID nil (complexMessage "content" $user2.Mention "embed" $embed) }}
 	
+	{{ $user1balance := (dbGet $user1.ID $balanceKey).Value }}
+	{{ $user2balance := (dbGet $user2.ID $balanceKey).Value }}
+	{{ dbSet $user1.ID $balanceKey (sub $user1balance $amount )}}
+	{{ dbSet $user2.ID $balanceKey (sub $user2balance $amount )}}
+
 	{{ dbSetExpire $user1.ID $gameKey (sdict "active" 1 "messageID" $x) 60 }}
 	{{ dbSetExpire $user2.ID $gameKey (sdict "active" 1 "messageID" $x) 60 }}
 	{{ dbSetExpire $x $gameKey (sdict "state" 0 "user1" $user1.ID "user2" $user2.ID "bet" $amount) 60 }}
