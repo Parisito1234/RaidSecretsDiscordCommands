@@ -1,6 +1,7 @@
 {{ $balanceKey := "RSCoinBalance" }}
 {{ $gameKey := "RSCasinoDuel" }}
-{{$e := "<:RSStonkCoin:869340420692394095>"}}
+{{ $e := "<:RSStonkCoin:869340420692394095>" }}
+{{ $historyKey := "RSCasinoDuelHistory" }}
 
 {{ $user := .User }}
 {{ $x := .Reaction.MessageID }}
@@ -22,7 +23,7 @@
 				{{ $gameState.Set "health1" 100 }}
 				{{ $gameState.Set "health2" 100 }}
 				{{ $gameState.Set "state" 1 }}
-				{{ dbSetExpire $x $gameKey $gameState 120}}
+				{{ dbSetExpire $x $gameKey $gameState 60}}
 
 				{{ $health1 := ($gameState.Get "health1")}}
 				{{ $health2 := ($gameState.Get "health2")}}
@@ -35,7 +36,7 @@
 					(sdict "name" $user1.Username "value" (joinStr "" $health1 "♥" ) "inline" true )
 					(sdict "name" $user2.Username "value" (joinStr "" $health2 "♥" ) "inline" true ))
 				}}
-				{{ editMessage nil $x (complexMessageEdit "content" $user2.Mention "embed" $embed) }}
+				{{ editMessage nil $x (complexMessageEdit "content" $user1.Mention "embed" $embed) }}
 				{{ addMessageReactions nil $x "⚔" "🛡" }}
 			{{ else if eq $r "❌" }}
 				{{ deleteAllMessageReactions nil $x }}
@@ -60,117 +61,158 @@
 		{{ $opponent := $user2 }}
 		{{ if eq ($gameState.Get "state") 2}} {{ $curUser = $user2 }} {{ $opponent = $user1 }} {{ end }}
 		{{/*CurUser is defined as person whose turn it is*/}}
-		
-		{{ $actionDesc := " " }}
-		{{ $dmg := (randInt 15 | add 15)}}
-		{{ if eq $curUser.ID $user.ID}}
-			{{/*Reacting user is correct*/}}
-			{{ if eq $r "⚔"}}
-				{{ $actionDesc = "attacks!"}}
-				{{ $gameState.Set (joinStr "" "dmg" ($gameState.Get "state")) $dmg }}
-			{{ else if eq $r "🛡"}}
-				{{ $actionDesc = "braces!"}}
-				{{ $gameState.Set (joinStr "" "dmg" ($gameState.Get "state")) (mult $dmg -1) }}
+
+		{{ if eq $user.ID $curUser.ID }}
+			{{/*Current user is correct*/}}
+			
+			{{ $actionDesc := " " }}
+			{{ $dmg := (randInt 15 | add 15)}}
+			{{ if eq $curUser.ID $user.ID}}
+				{{/*Reacting user is correct*/}}
+				{{ if eq $r "⚔"}}
+					{{ $actionDesc = "attacks!"}}
+					{{ $gameState.Set (joinStr "" "dmg" ($gameState.Get "state")) $dmg }}
+				{{ else if eq $r "🛡"}}
+					{{ $actionDesc = "braces!"}}
+					{{ $gameState.Set (joinStr "" "dmg" ($gameState.Get "state")) (mult $dmg -1) }}
+				{{ end }}
 			{{ end }}
-		{{ end }}
-		
-		{{ $health1 := ($gameState.Get "health1")}}
-		{{ $health2 := ($gameState.Get "health2")}}
+			
+			{{ $health1 := ($gameState.Get "health1")}}
+			{{ $health2 := ($gameState.Get "health2")}}
 
-		{{ $state = add $state 1 }}
-		{{ $gameState.Set "state" $state }}
-		
-		{{ $embedFields := (cslice
-			(sdict "name" "Wager" "value" (joinStr "" $e " `" $amount "`")  "inline" true ))
-		}}
+			{{ $state = add $state 1 }}
+			{{ $gameState.Set "state" $state }}
+			
+			{{ $embedFields := (cslice
+				(sdict "name" "Wager" "value" (joinStr "" $e " `" $amount "`")  "inline" true ))
+			}}
 
-		{{ if eq $state 3}}
-			{{/*Game is at calculation state*/}}
-			{{ $dmg1 := ($gameState.Get "dmg1")}}
-			{{ $dmg2 := ($gameState.Get "dmg2")}}
+			{{ if eq $state 3}}
+				{{/*Game is at calculation state*/}}
+				{{ $dmg1 := ($gameState.Get "dmg1")}}
+				{{ $dmg2 := ($gameState.Get "dmg2")}}
 
-			{{$appendStr1 := "*Blocked!*"}}
-			{{$appendStr2 := "*Blocked!*"}}
+				{{$appendStr1 := "*Blocked!*"}}
+				{{$appendStr2 := "*Blocked!*"}}
 
-			{{ if gt $dmg1 0 }}
-				{{ $appendStr1 = (joinStr "" "Attacks for `" $dmg1 "`") }}
-				{{ if gt (add $dmg1 $dmg2) 0}}
-					{{ $health2 = sub $health2 $dmg1 }}
+				{{ if gt $dmg1 0 }}
+					{{/*User is attacking*/}}
+					{{ $appendStr1 = (joinStr "" "Attacks for `" $dmg1 "`") }}
 					{{ if lt $dmg2 0 }}
-						{{ $appendStr2 = "*Failed to block!*"}}
+						{{/*Target is blocking*/}}
+						{{ $parry := (add $dmg1 $dmg2) }}
+						{{ if le $parry 0 }}
+							{{/*success*/}}	
+							{{ $health1 = add $health1 $parry }}
+							{{ $appendStr2 = (joinStr "" "Parried for `" (mult $parry -1) "`")}}
+						{{ end }}
+					{{ else }}
+						{{ $health2 = sub $health2 $dmg1 }}
 					{{ end }}
 				{{ end }}
-			{{ end }}
 
-			{{ if gt $dmg2 0 }}
-				{{ $appendStr2 = (joinStr "" "Attacks for `" $dmg2 "`") }}
-				{{ if gt (add $dmg1 $dmg2) 0}}
-					{{ $health1 = sub $health1 $dmg2 }}
+				{{ if gt $dmg2 0 }}
+					{{/*User is attacking*/}}
+					{{ $appendStr2 = (joinStr "" "Attacks for `" $dmg2 "`") }}
 					{{ if lt $dmg1 0 }}
-						{{ $appendStr1 = "*Failed to block!*"}}
+						{{/*Target is blocking*/}}
+						{{ $parry := (add $dmg2 $dmg1) }}
+						{{ if le $parry 0 }}
+							{{/*success*/}}	
+							{{ $health2 = add $health2 $parry }}
+							{{ $appendStr1 = (joinStr "" "Parried for `" (mult $parry -1) "`")}}
+						{{ end }}
+					{{ else }}
+						{{ $health1 = sub $health1 $dmg2 }}
 					{{ end }}
 				{{ end }}
-			{{ end }}
 
-			{{ $embedFields = $embedFields.AppendSlice (cslice (sdict "name" $user1.Username "value" $appendStr1 "inline" true ) 
-				(sdict "name" $user2.Username "value" $appendStr2 "inline" true ) 
-				(sdict "name" "Results:" "value" "`After last round:`" "inline" true ))
-			}}
-			
-			{{ $gameState.Set "health1" $health1 }}
-			{{ $gameState.Set "health2" $health2 }}
+				{{ $embedFields = $embedFields.AppendSlice (cslice (sdict "name" $user1.Username "value" $appendStr1 "inline" true ) 
+					(sdict "name" $user2.Username "value" $appendStr2 "inline" true ) 
+					(sdict "name" "Results:" "value" "`After last round:`" "inline" true ))
+				}}
+				
+				{{ $gameState.Set "health1" $health1 }}
+				{{ $gameState.Set "health2" $health2 }}
 
-			{{ deleteAllMessageReactions nil $x }}
-			{{ addMessageReactions nil $x "⚔" "🛡" }}
-			{{ $gameState.Set "state" 1 }}
+				{{ deleteAllMessageReactions nil $x }}
+				{{ addMessageReactions nil $x "⚔" "🛡" }}
+				{{ $gameState.Set "state" 1 }}
 
-			{{ if or (le $health1 0) (le $health2 0) }}
-				{{ $state = 4 }}
-				{{ $gameState.Set "state" 4 }}
-			{{ end }}
-			
-		{{ else }}
-			{{/*Next player's turn, reset reactions*/}}
-			{{ deleteAllMessageReactions nil $x }}
-			{{ addMessageReactions nil $x "⚔" "🛡" }}
-		{{ end }}
-
-		{{ $embedFields = $embedFields.AppendSlice (cslice (sdict "name" $user1.Username "value" (joinStr "" $health1 "♥" ) "inline" true ) 
-			(sdict "name" $user2.Username "value" (joinStr "" $health2 "♥" ) "inline" true )
-			(sdict "name" (joinStr "" $curUser.Username " " $actionDesc ) "value" (joinStr "" $opponent.Username " is up!") "inline" false ))
-		}}
-
-		{{$actionEmbed := cembed
-			"title" (joinStr "" "__" $user1.Username "__ challenges __" $user2.Username "__ to a duel!")
-			"description" "The game is on!"
-			"fields" $embedFields 
-		}}
-		{{ editMessage nil $x (complexMessageEdit "content" $opponent.Mention "embed" $actionEmbed) }}
-		
-		{{ dbSetExpire $x $gameKey $gameState 60 }}
-
-		{{ if eq $state 4}}
-			{{ deleteAllMessageReactions nil $x }}
-			{{ $winFields := cslice (sdict "name" "Wager" "value" (joinStr "" $e " `" $amount "`")  "inline" true ) }}
-
-			{{ if gt $health1 $health2}}
-				{{ $winFields = $winFields.Append (sdict "name" $user1.Username "value" "won!"  "inline" true )}}
+				{{ if or (le $health1 0) (le $health2 0) }}
+					{{ $state = 4 }}
+					{{ $gameState.Set "state" 4 }}
+				{{ end }}
 			{{ else }}
-				{{ $winFields = $winFields.Append (sdict "name" $user2.Username "value" "won!"  "inline" true )}}
+				{{/*Next player's turn, reset reactions*/}}
+				{{ deleteAllMessageReactions nil $x }}
+				{{ addMessageReactions nil $x "⚔" "🛡" }}
 			{{ end }}
 
-			{{$embed := cembed
-				"title" (joinStr "" "__" $user1.Username "__ challenged __" $user2.Username "__ to a duel!")
-				"description" "__Game Over!__"
-				"fields" $winFields
+			{{ $embedFields = $embedFields.AppendSlice (cslice (sdict "name" $user1.Username "value" (joinStr "" $health1 "♥" ) "inline" true ) 
+				(sdict "name" $user2.Username "value" (joinStr "" $health2 "♥" ) "inline" true )
+				(sdict "name" (joinStr "" $curUser.Username " " $actionDesc ) "value" (joinStr "" $opponent.Username " is up!") "inline" false ))
 			}}
-			{{ editMessage nil $x (complexMessageEdit "content" " " "embed" $embed) }}
+
+			{{$actionEmbed := cembed
+				"title" (joinStr "" "__" $user1.Username "__ challenges __" $user2.Username "__ to a duel!")
+				"description" "The game is on!"
+				"fields" $embedFields 
+			}}
+			{{ editMessage nil $x (complexMessageEdit "content" $opponent.Mention "embed" $actionEmbed) }}
 			
-			{{ dbDel $user1.ID $gameKey }}
-			{{ dbDel $user2.ID $gameKey }}
-			{{ dbDel $x $gameKey }}
+			{{ dbSetExpire $x $gameKey $gameState 60 }}
+			{{ dbSetExpire $user1.ID $gameKey (sdict "active" 1 "messageID" $x) 60 }}
+			{{ dbSetExpire $user2.ID $gameKey (sdict "active" 1 "messageID" $x) 60 }}
 
+			{{ if eq $state 4}}
+				{{/*Game is over, shut it down and hand out winnings.*/}}
+				{{ deleteAllMessageReactions nil $x }}
+				{{ $winFields := cslice (sdict "name" "Wager" "value" (joinStr "" $e " `" $amount "`")  "inline" true ) }}
+
+				{{ $user1History := (dbGet $user1.ID $historyKey).Value }}
+				{{ $user2History := (dbGet $user2.ID $historyKey).Value }}
+				{{if not (eq (printf "%T" $user1History) "*templates.SDict")}} {{ $user1History = (sdict "wins" 0 "losses" 0 )}} {{ end }}
+				{{if not (eq (printf "%T" $user2History) "*templates.SDict")}} {{ $user2History = (sdict "wins" 0 "losses" 0 )}} {{ end }}
+
+				{{ $user1balance := (dbGet $user1.ID $balanceKey).Value }}
+				{{ $user2balance := (dbGet $user2.ID $balanceKey).Value }}
+
+				{{ if and (le $health1 0) (le $health2 0)}}
+					{{ $winFields = $winFields.Append (sdict "name" "Game Over!" "value" "It was a draw!"  "inline" true )}}
+				{{ else if gt $health1 $health2}}
+					{{/*User 1 wins*/}}
+					{{ $winFields = $winFields.Append (sdict "name" "Game Over!" "value" (joinStr "" $user1.Username " won!")  "inline" true )}}
+					{{ dbSet $user1.ID $balanceKey (add $user1balance $amount )}}
+					{{ dbSet $user2.ID $balanceKey (sub $user2balance $amount )}}
+					
+					{{ $user1History.Set "wins" (add (toInt ($user1History.Get "wins")) 1)}}
+					{{ $user2History.Set "losses" (add (toInt ($user2History.Get "losses")) 1)}}
+				{{ else }}
+					{{/*User 2 wins*/}}
+					{{ $winFields = $winFields.Append (sdict "name" "Game Over!" "value" (joinStr "" $user2.Username " won!")  "inline" true )}}
+					{{ dbSet $user2.ID $balanceKey (add $user2balance $amount )}}
+					{{ dbSet $user1.ID $balanceKey (sub $user1balance $amount )}}
+
+					{{ $user1History.Set "losses" (add (toInt ($user1History.Get "losses")) 1)}}
+					{{ $user2History.Set "wins" (add (toInt ($user2History.Get "wins")) 1)}}
+				{{ end }}
+				
+				{{ dbSet $user1.ID $historyKey $user1History}}
+				{{ dbSet $user2.ID $historyKey $user2History}}
+
+				{{$embed := cembed
+					"title" (joinStr "" "__" $user1.Username "__ challenged __" $user2.Username "__ to a duel!")
+					"fields" $winFields
+					"footer" (sdict "text" (joinStr "" $user1.Username " has " $user1balance " coins | " $user2.Username " has " $user2balance " coins") )
+				}}
+				{{ editMessage nil $x (complexMessageEdit "content" " " "embed" $embed) }}
+				
+				{{ $silent := dbDel $user1.ID $gameKey }}
+				{{ $silent = dbDel $user2.ID $gameKey }}
+				{{ $silent = dbDel $x $gameKey }}
+			{{ end }}
 		{{ end }}
-
 	{{ end }}
 {{ end }}
