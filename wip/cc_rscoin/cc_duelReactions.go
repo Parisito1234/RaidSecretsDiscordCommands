@@ -3,20 +3,20 @@
 {{ $e := "<:RSStonkCoin:869340420692394095>" }}
 {{ $historyKey := "RSCasinoDuelHistory" }}
 
-{{ $user := .User }}
 {{ $x := .Reaction.MessageID }}
 {{ $gameState := (dbGet $x $gameKey).Value }}
-{{ $state := (toInt ($gameState.Get "state"))}}
-{{ $r := .Reaction.Emoji.Name }}
-{{ $user1 := userArg ($gameState.Get "user1")}}
-{{ $user2 := userArg ($gameState.Get "user2")}}
-{{ $amount := $gameState.Get "bet" }}
-
-{{ $user1balance := toInt (dbGet $user1.ID $balanceKey).Value }}
-{{ $user2balance := toInt (dbGet $user2.ID $balanceKey).Value }}
-
+{{ $user := .User }}
 
 {{if eq (printf "%T" $gameState) "*templates.SDict"}}
+	{{ $state := (toInt ($gameState.Get "state"))}}
+	{{ $r := .Reaction.Emoji.Name }}
+	{{ $amount := $gameState.Get "bet" }}
+
+	{{ $user1 := userArg ($gameState.Get "user1")}}
+	{{ $user2 := userArg ($gameState.Get "user2")}}
+	{{ $user1balance := toInt (dbGet $user1.ID $balanceKey).Value }}
+	{{ $user2balance := toInt (dbGet $user2.ID $balanceKey).Value }}
+
 	{{ if eq 0 $state }}
 		{{/* Waiting for game to start */}}
 
@@ -191,8 +191,6 @@
 
 				{{ if and (le $health1 0) (le $health2 0)}}
 					{{ $winFields = $winFields.Append (sdict "name" "Game Over!" "value" "It was a draw!"  "inline" true )}}
-					{{ $user1balance = (add $user1balance $amount )}}
-					{{ $user2balance = (add $user1balance $amount )}}
 				{{ else if gt $health1 $health2}}
 					{{/*User 1 wins*/}}
 					{{ $winFields = $winFields.Append (sdict "name" "Game Over!" "value" (joinStr "" $user1.Username " won!")  "inline" true )}}
