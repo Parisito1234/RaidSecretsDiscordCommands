@@ -189,6 +189,8 @@
 
 				{{ if and (le $health1 0) (le $health2 0)}}
 					{{ $winFields = $winFields.Append (sdict "name" "Game Over!" "value" "It was a draw!"  "inline" true )}}
+					{{ dbSet $user2.ID $balanceKey (add $user2balance $amount )}}
+					{{ dbSet $user2.ID $balanceKey (add $user2balance $amount )}}
 				{{ else if gt $health1 $health2}}
 					{{/*User 1 wins*/}}
 					{{ $winFields = $winFields.Append (sdict "name" "Game Over!" "value" (joinStr "" $user1.Username " won!")  "inline" true )}}
