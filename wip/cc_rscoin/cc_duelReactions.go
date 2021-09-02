@@ -105,7 +105,7 @@
 						{{/*Target is blocking*/}}
 						{{ if le $parry 0 }}
 							{{/*success*/}}	
-							{{ $health1 = add $health1 $parry }}
+							{{ $health1 = add $health1 (mult $parry 2) }}
 							{{ $appendStr2 = (joinStr "" "Parried for `" (mult $parry -1) "`")}}
 							{{ $appendStr1 = "Got parried!"}}
 						{{ else }}
@@ -124,7 +124,7 @@
 						{{/*Target is blocking*/}}
 						{{ if le $parry 0 }}
 							{{/*success*/}}	
-							{{ $health2 = add $health2 $parry }}
+							{{ $health2 = add $health2 (mult $parry 2) }}
 							{{ $appendStr1 = (joinStr "" "Parried for `" (mult $parry -1) "`")}}
 							{{ $appendStr2 = "Got parried!"}}
 						{{ else }}
