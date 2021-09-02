@@ -22,9 +22,8 @@
 
 {{ if or (eq (toInt ($gameState1.Get "active")) 1 ) (eq (toInt ($gameState2.Get "active")) 1 ) }}
 	{{ sendMessage nil "One of the players still has an active duel!" }}
-{{/*{{ else if eq $user1.ID $user2.ID }}
+{{ else if eq $user1.ID $user2.ID }}
 	{{ sendMessage nil (joinStr "" $user1.Username ", you can't start a duel with yourself.")}}
-*/}}
 {{ else if le $amount 0 }}
 	{{ sendMessage nil (joinStr "" $user1.Username ", your bet needs to be a positive number!")}}
 {{ else if gt $amount $curBalance }}
