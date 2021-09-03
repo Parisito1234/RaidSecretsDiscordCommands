@@ -1,3 +1,4 @@
+{{/*REACTION COMMAND FOR BLACKJACK*/}}
 {{$key := "RSCoinBalance" }}
 {{$gameKey := "RSCasinoBlackJack"}}
 {{$e := "<:RSStonkCoin:869340420692394095>"}}
@@ -69,8 +70,8 @@
 	{{$bet := $initialData.Get "Bet"}}
 
 	{{if eq $x $.Reaction.MessageID}} {{/*correct person*/}}
-		{{if eq $.Reaction.Emoji.ID 881273087499337728}} {{/*hit*/}}
-			{{deleteMessageReaction nil $x $.User.ID ":hit:881273087499337728"}}
+		{{if eq $.Reaction.Emoji.ID 882739520582320169}} {{/*hit*/}}
+			{{deleteMessageReaction nil $x $.User.ID "HITnew:882739520582320169"}}
 
 			{{$roll1 := randInt (sub (len ($deck)) 1)}}
 			{{$card1 := (index $deck $roll1)}}
@@ -114,7 +115,7 @@
 				(sdict "name" "Bet" "value" (joinStr "" $e " `" $bet "`")  "inline" true )
 				(sdict "name" $.User.Username "value" $player "inline" true)
 				(sdict "name" "Sweeper" "value" (joinStr "" (toString (index $prettydealerhand 0)) "  ??") "inline" true)
-				(sdict "name" "BUST!" "value" (joinStr "" "You've gone bust and lost all `" $e $bet "` " " on the table...") "inline" false)
+				(sdict "name" "BUST!" "value" (joinStr "" "You've gone bust and lost all " $e " `"  $bet "` " " on the table...") "inline" false)
 				)}}
 				{{$silent = editMessage nil $x $embed}}
 				{{if not (in (split (index (split (exec "viewperms") "\n") 2) ", ") "ManageServer")}}
@@ -124,8 +125,8 @@
 				{{deleteAllMessageReactions nil $x}}
 			{{end}}
 
-			{{else if eq $.Reaction.Emoji.ID 881273109670412368}}
-			{{deleteMessageReaction nil $x $.User.ID ":stand:881273109670412368"}}
+			{{else if eq $.Reaction.Emoji.ID 882739123306266634}}
+			{{deleteMessageReaction nil $x $.User.ID ":STANDnew:882739123306266634"}}
 			{{deleteAllMessageReactions nil $x}}
 
 			{{ $data := sdict "List" $phand}}
