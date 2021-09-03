@@ -139,6 +139,14 @@
 					{{ end }}
 				{{ end }}
 
+				{{ if and (lt $dmg1 0) (lt $dmg2 0) }}
+					{{ $dmg = (randInt 12 | add 3 )}}
+					{{ $appendStr1 = (joinStr "" "Was bashed for `" $dmg "`")}}
+					{{ $appendStr2 = (joinStr "" "Was bashed for `" $dmg "`")}}
+					{{ $health1 = sub $health1 $dmg }}
+					{{ $health2 = sub $health2 $dmg }}
+				{{ end }}
+
 				{{ $embedFields = $embedFields.AppendSlice (cslice (sdict "name" $user1.Username "value" $appendStr1 "inline" true ) 
 					(sdict "name" $user2.Username "value" $appendStr2 "inline" true ) 
 					(sdict "name" "Results:" "value" "`After last round:`" "inline" true ))
