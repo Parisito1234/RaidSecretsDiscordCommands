@@ -3,3 +3,4 @@
 {{$data := (dbGet $.User.ID $pitKey).Value}}
 {{$data.Set "State" "false"}}
 {{dbSet $.User.ID $pitKey $data}}
+{{ deleteTrigger 5}}
