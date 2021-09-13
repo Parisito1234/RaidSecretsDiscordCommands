@@ -57,19 +57,15 @@
         }}
 
     {{$x := sendMessageRetID nil $embed}}
-    {{addMessageReactions nil $x ":ballot_box_with_check:" ":negative_squared_cross_mark:"}}
+    {{addMessageReactions nil $x "☑" "❎"}}
     {{$data.Set "State" "true"}}
     {{$data.Set "X" $x}}
     {{$data.Set "Start" 1}}
     {{dbSet $.User.ID $pitKey $data}}
 
-
-
-
 {{else}}
     {{sendMessage nil "You are currently in the thrall pit, quit tryna break my code"}}
 
 {{end}}
-
 
 {{end}}

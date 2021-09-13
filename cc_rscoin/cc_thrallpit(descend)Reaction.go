@@ -13,7 +13,6 @@
 {{$hiveDead := false}}
 
 
-
 {{$hiveType := cslice "Thrall" "Stasis Thrall" "Buff Thrall" "Thrall with a Gun" "Thrall with a Wizard hat" "Treasure Chest" "Mega-Thrall with Laser Eyes" "Ascendant Thrall" "Thrall with a Hive Ghost" "Corrupted Sweeperbot Husk"}}
 {{$hiveAtk := cslice 5 10 15 15 20 0 25 30 30 40}}
 {{$hiveHP := cslice 15 25 35 45 50 1 75 80 100 200}}
@@ -32,7 +31,6 @@
 }}
 
 {{$H_Type := 0}}{{$H_Atk := 0}}{{$H_HP := 0}}{{$H_Value := 0}}{{$H_Image := 0}}
-
 
 {{if eq (printf "%T" $data) "*templates.SDict"}}
 	{{$x := $data.Get "X"}}
@@ -75,7 +73,6 @@
             {{if gt $Kills 24}}{{$Lo = 145}}{{$Hi = 146}}{{end}}
             {{$H := randInt $Lo $Hi}}
 
-
             {{$T := 0}}
             {{if le $H 10}}{{$T = 0}}
             {{else if le $H 25}}{{$T = 1}}
@@ -98,8 +95,6 @@
 				        (sdict "name" "Encounter:" "value" (joinStr "" "`" $H_Type "`") "inline" true)
 				        (sdict "name" "Potential Loot:" "value" (joinStr " " $H_Value $e) "inline" true)
 				        (sdict "name" "Previous Loot:" "value" (joinStr " " $Coins $e) "inline" true))}}
-
-
             {{/*sendMessage nil (joinStr " " "Roll:" $H "Type:" $H_Type "Attack:" $H_Atk "HP:" $H_HP "Value:" $H_Value "Player Attack:" $Attack)*/}}
             {{$dead := false}}
 
@@ -125,8 +120,8 @@
                     {{- if lt $H_HP 0 -}}{{- $H_HP = 0 -}}{{- end -}}
 
                     {{- $fields = $fields.AppendSlice (cslice
-                         (sdict "name" (joinStr "" $.User.Username ":") "value" (joinStr "" "Hits for: " $pDMG " ⚔\nThrall is on " $H_HP " ❤") "inline" true)
-                         (sdict "name" "Crit?" "value" $critbool "inline" true)
+                         (sdict "name" (joinStr "" $.User.Username ":") "value" (joinStr "" "Dealt `" $pDMG "` ⚔\nThrall: ❤`" $H_HP "`") "inline" true)
+                         
                         ) -}}
 
 
@@ -141,7 +136,8 @@
                         {{- $dead = true -}}
                     {{- end -}}
                     {{- $fields = $fields.AppendSlice (cslice
-                         (sdict "name" (joinStr "" $H_Type ":") "value" (joinStr "" "Hits for: " $hDMG " ⚔\nYou are on " $HP " ❤") "inline" true)
+                         (sdict "name" (joinStr "" $H_Type ":") "value" (joinStr "" "Dealt `" $hDMG "` ⚔\nYou have ❤`" $HP "`") "inline" true)
+                         (sdict "name" "Crit?" "value" $critbool "inline" true)
                         ) -}}
 
                 {{- end -}}
@@ -153,24 +149,22 @@
                 {{if eq $hiveDead true}}
                     {{$hiveSlain = add $hiveSlain 1}}
                 {{end}}
-                {{$fields = $fields.AppendSlice (cslice (sdict "name" "Result:" "value" (joinStr "" "You died to the " $H_Type  "\nCoins lost: " $Coins " " $e "\nKills: " $Kills))
-                                                        (sdict "name" "Cooldown:" "value" "1800 seconds" ))}}
+                {{$fields = $fields.AppendSlice (cslice (sdict "name" "Result:" "value" (joinStr "" "You died to the " $H_Type  "\nCoins lost: " $e " `" $Coins "` \nKills: " $Kills))
+                                                        (sdict "name" "Cooldown:" "value" "30m" ))}}
                 {{$data.Set "State" "false"}}
                 {{dbSetExpire $.User.ID $cooldownKey 1 1800}}
-
-
 
             {{else if eq $hiveDead true}}
                 {{$hiveSlain = add $hiveSlain 1}}
                 {{$Coins = add $Coins $H_Value}}
                 {{$Kills = add $Kills 1}}
-                {{$fields = $fields.AppendSlice (cslice (sdict "name" "Result:" "value" (joinStr "" "You killed the " $H_Type "\n Current HP: " $HP " ❤\n Loot gathered: " $Coins " " $e "\nKills: " $Kills) ))}}
-                {{addMessageReactions nil $x ":ballot_box_with_check:" ":negative_squared_cross_mark:"}}
+                {{$fields = $fields.AppendSlice (cslice (sdict "name" "Result:" "value" (joinStr "" "**You killed the " $H_Type "**\n Current HP: `" $HP "` ❤\n Loot: " $e " `" $Coins "`\nKills: `" $Kills "`") ))}}
+                {{addMessageReactions nil $x "☑" "❎"}}
             {{end}}
 
             {{$embed := cembed
 				"title" (joinStr "" "__" $.User.Username "__ has entered the thrallpit")
-				"image" (sdict "url" $H_Image)
+				"thumbnail" (sdict "url" $H_Image)
 				"fields" $fields}}
             {{editMessage nil $x $embed}}
 
@@ -179,8 +173,6 @@
             {{$data.Set "Coins" $Coins}}
             {{$data.Set "Attack" $Attack}}
             {{$data.Set "Kills" $Kills}}
-
-
 
             {{dbSet $.User.ID $pitKey $data}}
 
@@ -191,7 +183,6 @@
                 {{/*ABORT*/}}
                 {{deleteAllMessageReactions nil $x}}
                 {{editMessage nil $x "You walked away from the thrallpit"}}
-
 
             {{else}}
                 {{/*LEAVE*/}}
@@ -215,12 +206,9 @@
                 {{$embed := cembed
                     "title" (joinStr "" "__" $.User.Username "__ has left the thrallpit")
                     "fields" (cslice
-				        (sdict "name" "Kills:" "value" (toString $K) "inline" true)
-                        (sdict "name" "Coins Gathered:" "value" (joinStr " " $C $e) "inline" true)
-                        (sdict "name" "HP Left:" "value" (toString $H) "inline" true)
-                        (sdict "name" "XP:" "value" (toString $XP) "inline" true)
-                        (sdict "name" "Level:" "value" (toString $L) "inline" true)
-                        (sdict "name" "Thrallpit Cooldown:" "value" (joinStr "" $cooldown " seconds")))
+                        (sdict "name" "Results:" "value" (joinStr "" "Kills: `" $K "`\n" "Loot: " $e "`" $C "`\n" "HP: `" $H "`") "inline" true)
+                        (sdict "name" (joinStr "" "XP: " "`" $XP "`") "value" (joinStr "" "Level: " "`" $L "`") "inline" true))
+                    "footer" (sdict "text" (joinStr "" "Cooldown:" (div $cooldown 60) "m " (mod $cooldown 60) "s"))
 				    }}
 
                 {{dbSetExpire $.User.ID $cooldownKey 1 $cooldown}}
@@ -228,8 +216,6 @@
 
                 {{editMessage nil $x $embed}}
                 {{/*DO THE MONEY THING HERE AND ADD TO STATS*/}}
-
-
 
             {{end}}
             {{dbSet $.User.ID $pitKey $data}}
