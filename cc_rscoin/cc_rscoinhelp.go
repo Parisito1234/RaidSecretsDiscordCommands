@@ -5,6 +5,7 @@
 	(sdict "name" "Pay" "value" "`-rscoin <give|pay> <amount>`" "inline" true )
 	(sdict "name" "Leaderboard" "value" "`-rscoin <top|list>`" "inline" true )
 	(sdict "name" "Claim (One-time)" "value" "`-rscoin claim`" "inline" true )
+	(sdict "name" "Give up" "value" "`-rscoin <empty|dump|remove>`" "inline" true )
 	(sdict "name" "__Games__" "value" "These do not start with `-rscoin`" "inline" false )
 	(sdict "name" "Roulette" "value" "`-roulette <tile> <amount>`" "inline" true )
 	(sdict "name" "Coin Flip" "value" "`-coinflip <amount>`" "inline" true )

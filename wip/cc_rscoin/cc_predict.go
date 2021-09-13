@@ -1,7 +1,7 @@
 {{ $perms := "ManageServer"}}
 {{ $key := "RSCoinBalance" }}
 {{ $coinIcon := "<:RSStonkCoin:869340420692394095>" }}
-{{ $args := parseArgs 1 "Syntax is `<action> <option 1> <option 2>`"
+{{ $args := parseArgs 1 "Syntax is `< start | stop > <option 1> <option 2>`"
 	(carg "string" "action - start, stop")
 	(carg "string" "Options for predictions") 
 	(carg "string" "Options for predictions") }}
@@ -18,8 +18,8 @@
 			{{$embed := cembed 
 			    "color" 1772743
 			    "fields" (cslice 
-			        (sdict "name" ":one:" "value" $option1 "inline" true) 
-			        (sdict "name" ":two:" "value" $option2 "inline" true) 
+			        (sdict "name" ":one:" "value" $option1 "inline" false) 
+			        (sdict "name" ":two:" "value" $option2 "inline" false) 
 			    ) 
 			    "author" (sdict "name" "RaidSecrets Prediction") 
 			}}
