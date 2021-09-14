@@ -40,7 +40,7 @@
 	{{if eq $x $.Reaction.MessageID}}
 	    {{$emoji := $.Reaction.Emoji.Name}}
 	    {{$start := $data.Get "Start"}}
-	    {{if eq $emoji "☑"}}
+	    {{if and (eq $emoji "☑") (eq ($data.Get "State") "true") }}
             {{if eq $start 1}}
                 {{/*NEW GAME*/}}
                 {{deleteAllMessageReactions nil $x}}
@@ -171,26 +171,25 @@
             {{editMessage nil $x $embed}}
 
             {{$data.Set "hiveSlain" $hiveSlain}}
-            
-            
-            
-            
             {{$data.Set "HP" $HP}}
             {{$data.Set "Coins" $Coins}}
             {{$data.Set "Attack" $Attack}}
             {{$data.Set "Kills" $Kills}}
+            
 
             {{dbSet $.User.ID $pitKey $data}}
 
         {{else if eq $emoji "❎"}}
-            {{$data.Set "State" "false"}}
+            
             {{$data.Set "Start" 0}}
             {{if eq (toInt $start) 1}}
+		{{$data.Set "State" "false"}}
                 {{/*ABORT*/}}
                 {{deleteAllMessageReactions nil $x}}
                 {{editMessage nil $x "You walked away from the thrallpit"}}
 
-            {{else}}
+            {{else if  eq ($data.Get "State") "true"}}
+		{{$data.Set "State" "false"}}
                 {{/*LEAVE*/}}
                 {{deleteAllMessageReactions nil $x}}
 
@@ -218,7 +217,7 @@
 				    }}
 
                 {{dbSetExpire $.User.ID $cooldownKey 1 $cooldown}}
-                {{dbSet $.User.ID $killKey (add ($data.Get "Kills") ($data.Get "hiveSlain"))}}
+                {{dbSet $.User.ID $killKey ($data.Get "hiveSlain")}}
                 {{dbSet $.User.ID $XPKey $XP}}
 
                 {{editMessage nil $x $embed}}
