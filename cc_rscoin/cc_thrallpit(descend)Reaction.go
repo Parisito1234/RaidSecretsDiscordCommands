@@ -3,6 +3,8 @@
 {{$key := "RSCoinBalance" }}
 {{$pitKey := "RSCoinThrallPit"}}
 {{$cooldownKey := "RSCoinThrallPitCooldown"}}
+{{$killKey := "RSCoinThrallPitKills"}}
+{{$XPKey := "RSCoinThrallPitXP"}}
 {{$HP := 0}}
 {{$Attack := 0}}
 {{$XP := 0}}
@@ -121,7 +123,7 @@
 
                     {{- $fields = $fields.AppendSlice (cslice
                          (sdict "name" (joinStr "" $.User.Username ":") "value" (joinStr "" "Dealt `" $pDMG "` ⚔\nThrall: ❤`" $H_HP "`") "inline" true)
-                         
+
                         ) -}}
 
 
@@ -169,6 +171,10 @@
             {{editMessage nil $x $embed}}
 
             {{$data.Set "hiveSlain" $hiveSlain}}
+            
+            
+            
+            
             {{$data.Set "HP" $HP}}
             {{$data.Set "Coins" $Coins}}
             {{$data.Set "Attack" $Attack}}
@@ -212,7 +218,8 @@
 				    }}
 
                 {{dbSetExpire $.User.ID $cooldownKey 1 $cooldown}}
-
+                {{dbSet $.User.ID $killKey (add ($data.Get "Kills") ($data.Get "hiveSlain"))}}
+                {{dbSet $.User.ID $XPKey $XP}}
 
                 {{editMessage nil $x $embed}}
                 {{/*DO THE MONEY THING HERE AND ADD TO STATS*/}}
